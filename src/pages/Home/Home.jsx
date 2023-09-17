@@ -7,11 +7,12 @@ import TodoList from "./TodoList";
 
 const Home = () => {
   return (
-    <div>
-      <div className="container mx-auto mt-8">
-        <h1 className="text-2xl font-bold mb-4">Todo List</h1>
+    <div className="mt-16 flex flex-col md:flex-row container mx-auto">
+      <div className="container w-full md:w-3/4 mx-auto mt-8 md:mr-4">
+        <h1 className="text-2xl font-bold mb-4">Blogs</h1>
         <TodoList />
       </div>
+      <div className="hidden md:block w-full md:w-1/4 mt-4 md:mt-0">Comming Soon</div>
     </div>
   );
 };

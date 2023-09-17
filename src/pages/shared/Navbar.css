@@ -1,0 +1,61 @@
+/* Style for the navigation bar */
+.navbar {
+    background-color: #007BFF; /* Set your desired background color */
+    overflow: hidden;
+    position: relative; /* Add relative positioning for dropdown menu */
+}
+
+/* Style for the navigation bar links */
+.navbar a {
+    float: left;
+    display: block;
+    color: white; /* Set your desired text color */
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    position: relative; /* Add relative positioning for dropdown menu */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for link color change */
+}
+
+/* On hover, add a background color to the navigation bar links */
+.navbar a:hover {
+    background-color: #0056b3; /* Set your desired hover color */
+    color: #fff; /* Change text color on hover */
+}
+
+/* Style for the active link */
+.active {
+    background-color: #0056b3; /* Set the background color for the active link */
+    color: #fff; /* Text color for the active link */
+}
+
+/* Media query for small screens */
+@media (max-width: 768px) {
+    .navbar {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+
+    .navbar a {
+        float: none;
+        text-align: center;
+        width: 25%; /* You can adjust the width of each link for small screens */
+        line-height: 50px; /* Center text vertically */
+    }
+
+    /* Style for the dropdown menu container */
+    .navItem {
+        position: relative;
+        display: inline-block; /* Make sure the dropdown menu is inline with the other links */
+    }
+
+  
+
+    /* Show the dropdown menu when hovering over the parent link */
+    .navItem:hover  {
+        display: block;
+    }
+
+    
+}

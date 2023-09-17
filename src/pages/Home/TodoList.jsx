@@ -11,9 +11,10 @@ const TodoList = () => {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/todos');
+        const response = await axios.get('https://blogs-server-seven.vercel.app/api/todos');
         // Ensure that response.data is an array
         if (Array.isArray(response.data)) {
+          console.log(response.data);
           setTodos(response.data);
         } else {
           setError('Error: Data received is not an array');
@@ -42,7 +43,7 @@ const TodoList = () => {
       ) : (
         <ul>
           {todos.map((todo) => (
-            <TodoItem key={todo._id} todo={todo} onDelete={onDelete} />
+            <TodoItem key={todo._id} todo={todo}  onDelete={onDelete} />
           ))}
         </ul>
       )}
