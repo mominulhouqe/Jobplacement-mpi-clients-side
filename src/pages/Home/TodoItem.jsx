@@ -13,6 +13,8 @@ import { red } from "@mui/material/colors";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -22,9 +24,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const handleUpdateTodo = async () => {
     try {
       await axios.put(
-        `https://blogs-server-seven.vercel.app/api/todos/${
-          todo._id
-        }?_=${Math.random()}`,
+        `https://blogs-server-seven.vercel.app/api/todos/${todo._id}`,
         {
           text,
           completed: todo.completed,
@@ -32,12 +32,17 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       );
 
       setIsEditing(false);
-      Swal.fire({
-        icon: "success",
-        title: "Todo Updated",
-        text: "Your todo has been updated successfully!",
-      });
       onUpdate(todo._id, text);
+
+      // Show a success toast message
+      toast.success("Todo updated successfully!", {
+        position: "top-right",
+        autoClose: 3000, // Auto close the message after 3 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (error) {
       console.error("Error updating Todo:", error);
       Swal.fire({
@@ -70,7 +75,10 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   };
 
   const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
+    // Only open the menu if not in editing mode
+    if (!isEditing) {
+      setAnchorEl(event.currentTarget);
+    }
   };
 
   const handleCloseMenu = () => {
@@ -80,16 +88,18 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   return (
     <Card
       sx={{ maxWidth: 345 }}
-      className={`border rounded-lg overflow-hidden shadow-md mt-2 mb-2 ${
+      className={`border rounded-lg mx-auto container overflow-hidden shadow-md mt-2 mb-2 ${
         isEditing ? "bg-gray-100" : ""
       }`}
     >
       <CardContent>
         <div className="flex justify-between mb-4">
           <div className="flex items-center">
-            <Avatar sx={{ bgcolor: red[500] }} aria-label="user-profile">
-              {/* You can add initials or an icon here */}
-            </Avatar>
+            <Avatar
+              sx={{ bgcolor: red[500] }}
+              src={todo.photoURL}
+              aria-label="user-profile"
+            ></Avatar>
             <div className="ml-2">
               <Typography variant="subtitle1">{todo.userName}</Typography>
               <Typography variant="caption" color="textSecondary">
@@ -100,11 +110,10 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
 
           <CardActions disableSpacing>
             <IconButton
-              onClick={handleMenuClick}
+              onClick={isEditing ? null : handleMenuClick}
               aria-controls="todo-menu"
               aria-haspopup="true"
             >
-              {/* Three-dot menu icon */}
               <MoreVertIcon />
             </IconButton>
           </CardActions>
@@ -148,7 +157,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
               />
             )}
 
-            {/* Menu for Edit and Delete options */}
+          
             <Menu
               id="todo-menu"
               anchorEl={anchorEl}
@@ -165,6 +174,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
           </>
         )}
       </CardContent>
+      <ToastContainer />
     </Card>
   );
 };

@@ -2,6 +2,12 @@ import React, { useContext, useState } from "react";
 import axios from "axios";
 import TodoList from "./TodoList";
 import { AuthContext } from "../../provider/AuthProvider";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Avatar from "@mui/material/Avatar";
+import AddIcon from "@mui/icons-material/Add";
 
 const img_hosting_token = import.meta.env.VITE_Image_Upload_token;
 
@@ -11,51 +17,64 @@ const Task = ({ addTodo }) => {
   const { user } = useContext(AuthContext);
 
   const handleAddTodo = async () => {
-    if (!text.trim() || !file) {
-      // Check if the input is empty or no file is selected
+    if (!text.trim() && !file) {
+      // Check if the input is empty
       return; // Don't proceed if the input is invalid
     }
 
     try {
-      // Create a FormData object to send the image file
-      const formData = new FormData();
-      formData.append("image", file);
+      let imgURL = null;
 
-      // Make a POST request to the image hosting service to upload the image
-      const img_hosting_url = `https://api.imgbb.com/1/upload?key=${img_hosting_token}`;
-      const response = await fetch(img_hosting_url, {
-        method: "POST",
-        body: formData,
-      });
+      // Check if a file is selected for image upload
+      if (file) {
+        // Create a FormData object to send the image file
+        const formData = new FormData();
+        formData.append("image", file);
 
-      const imgResponse = await response.json();
+        // Make a POST request to the image hosting service to upload the image
+        const img_hosting_url = `https://api.imgbb.com/1/upload?key=${img_hosting_token}`;
+        const response = await fetch(img_hosting_url, {
+          method: "POST",
+          body: formData,
+        });
 
-      if (imgResponse.success) {
-        const imgURL = imgResponse.data.display_url;
+        const imgResponse = await response.json();
 
-        // Create a newTodo object with the image URL
-        const newTodo = {
-          text,
-          photoURL: user.photoURL,
-          image: imgURL,
-          // Add any other properties you need for your todo
-        };
-
-        // Update the UI with the new todo immediately
-        addTodo(newTodo);
-
-        // Now make the API request to add the todo to the server
-        const apiResponse = await axios.post("https://blogs-server-seven.vercel.app/api/todos", newTodo);
-
-        // Handle a successful API response if needed
-        console.log("Todo added successfully:", apiResponse.data);
-
-        setText("");
-        setFile(null); // Reset the selected file after adding the todo
-      } else {
-        // Handle the case where the image upload was not successful
-        console.error("Image upload failed:", imgResponse.error.message);
+        if (imgResponse.success) {
+          imgURL = imgResponse.data.display_url;
+        } else {
+          // Handle the case where the image upload was not successful
+          console.error("Image upload failed:", imgResponse.error.message);
+        }
       }
+
+     
+      const newTodo = {
+        text,
+        photoURL: user.photoURL,
+        image: imgURL,
+  
+        userName: user.displayName,
+        email: user.email,
+        timestamp: new Date().toISOString(),
+        // Add any other properties you need for your todo
+      };
+
+      // Update the UI with the new todo immediately
+      addTodo(newTodo);
+
+      // Now make the API request to add the todo to the server
+      const apiResponse = await axios.post(
+        "https://blogs-server-seven.vercel.app/api/todos",
+        newTodo
+      );
+
+      // Handle a successful API response if needed
+      console.log("Todo added successfully:", apiResponse.data);
+
+      setText("");
+      setFile(null); // Reset the selected file after adding the todo
+     
     } catch (error) {
       // Handle any unexpected errors
       console.error("Error adding Todo:", error);
@@ -75,29 +94,53 @@ const Task = ({ addTodo }) => {
   };
 
   return (
-    <div>
-      <div className="flex items-center space-x-2">
-        <input
-          type="text"
-          className="border border-gray-300 rounded px-2 py-1 w-full"
-          placeholder="Add a new Todo..."
+    <div className="facebook-style-post">
+      <div className="post-header">
+        <Avatar src="" alt="User Avatar" />
+        <TextField
+          fullWidth
+          multiline
+          rows={2}
+          label="What's on your mind?"
+          variant="outlined"
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyPress={handleKeyPress}
         />
+      </div>
+      {file && (
+        <div className="selected-image">
+          <img src={URL.createObjectURL(file)} alt="Selected" />
+        </div>
+      )}
+     
+      <div className="post-actions">
         <input
           type="file"
-          onChange={handleFileChange} // Call handleFileChange when a file is selected
+          accept="image/*"
+          style={{ display: "none" }}
+          id="file-input"
+          onChange={handleFileChange}
         />
-        <button
-          className={`bg-blue-500 text-white px-3 py-1 rounded ${
-            !text.trim() || !file ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+        <label htmlFor="file-input">
+          <Button
+            variant="outlined"
+            color="primary"
+            component="span"
+            startIcon={<CloudUploadIcon />}
+          >
+            Photo/Video
+          </Button>
+        </label>
+        <Button
+          variant="contained"
+          color="primary"
           onClick={handleAddTodo}
-          disabled={!text.trim() || !file}
+          disabled={!text.trim() && !file}
+          startIcon={<AddIcon />}
         >
-          Add Todo
-        </button>
+          Post
+        </Button>
       </div>
     </div>
   );
