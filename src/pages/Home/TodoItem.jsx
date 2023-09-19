@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { FaTrash } from "react-icons/fa";
 import { BsPencil } from "react-icons/bs";
+import { HiFlag } from "react-icons/hi";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
@@ -15,11 +16,29 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AuthContext } from "../../provider/AuthProvider";
 
+import './Todos.css'
 const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(todo.text);
   const [anchorEl, setAnchorEl] = useState(null);
+  const { user } = useContext(AuthContext);
+  const [showAllText, setShowAllText] = useState(false);
+
+  const [showAllImages, setShowAllImages] = useState(false);
+  const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [reporting, setReporting] = useState(false);
+
+  const openFullscreenImage = (image) => {
+    setFullscreenImage(image);
+  };
+
+  const closeFullscreenImage = () => {
+    setFullscreenImage(null);
+  };
+
+  const isOwner = user && user.uid === todo.userId;
 
   const handleUpdateTodo = async () => {
     try {
@@ -34,21 +53,20 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       setIsEditing(false);
       onUpdate(todo._id, text);
 
-      // Show a success toast message
-      toast.success("Todo updated successfully!", {
+      toast.success("post updated successfully!", {
         position: "top-right",
-        autoClose: 3000, // Auto close the message after 3 seconds
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
       });
     } catch (error) {
-      console.error("Error updating Todo:", error);
+      console.error("Error updating post:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "An error occurred while updating the todo.",
+        text: "An error occurred while updating the post.",
       });
     }
   };
@@ -61,21 +79,60 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       onDelete(todo._id);
       Swal.fire({
         icon: "success",
-        title: "Todo Deleted",
+        title: "Post Deleted",
         text: "Your todo has been deleted successfully!",
       });
     } catch (error) {
-      console.error("Error deleting Todo:", error);
+      console.error("Error deleting post:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "An error occurred while deleting the todo.",
+        text: "An error occurred while deleting the post.",
+      });
+    }
+  };
+
+  const handleReportTodo = async () => {
+    if (reporting) {
+      // User has already reported, so don't allow reporting again
+      return;
+    }
+
+    try {
+      await axios.post(
+        `https://blogs-server-seven.vercel.app/api/todosReports`, // Replace with your API endpoint
+        {
+          text,
+          photoURL: user.photoURL,
+          userName: user.displayName,
+          email: user.email,
+          timestamp: new Date().toISOString(),
+          todoId: todo._id,
+          reporterId: user.uid, // Assuming user has an ID
+        }
+      );
+
+      setReporting(true);
+
+      toast.success("post reported successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      console.error("Error reporting post:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "An error occurred while reporting the post.",
       });
     }
   };
 
   const handleMenuClick = (event) => {
-    // Only open the menu if not in editing mode
     if (!isEditing) {
       setAnchorEl(event.currentTarget);
     }
@@ -85,12 +142,18 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     setAnchorEl(null);
   };
 
+  const images = todo.images
+    ? todo.images.map((image) => ({
+      original: image,
+      thumbnail: image,
+    }))
+    : [];
+
   return (
     <Card
       sx={{ maxWidth: 345 }}
-      className={`border rounded-lg mx-auto container overflow-hidden shadow-md mt-2 mb-2 ${
-        isEditing ? "bg-gray-100" : ""
-      }`}
+      className={`border rounded-lg mx-auto container overflow-hidden shadow-md mt-2 mb-2 ${isEditing ? "bg-gray-100" : ""
+        }`}
     >
       <CardContent>
         <div className="flex justify-between mb-4">
@@ -107,15 +170,21 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
               </Typography>
             </div>
           </div>
-
           <CardActions disableSpacing>
-            <IconButton
-              onClick={isEditing ? null : handleMenuClick}
-              aria-controls="todo-menu"
-              aria-haspopup="true"
-            >
-              <MoreVertIcon />
-            </IconButton>
+            {isOwner && (
+              <IconButton
+                onClick={isEditing ? null : handleMenuClick}
+                aria-controls="todo-menu"
+                aria-haspopup="true"
+              >
+                <MoreVertIcon />
+              </IconButton>
+            )}
+            {!isOwner && (
+              <IconButton onClick={handleReportTodo}>
+                <HiFlag />
+              </IconButton>
+            )}
           </CardActions>
         </div>
 
@@ -127,7 +196,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
               value={text}
               onChange={(e) => setText(e.target.value)}
             ></textarea>
-
             <div className="flex justify-end mt-2">
               <button
                 className="bg-blue-500 text-white px-3 py-1 rounded"
@@ -142,35 +210,103 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             <Typography
               variant="body2"
               color="text.secondary"
-              className={`text-lg ${
-                todo.completed ? "line-through text-gray-400" : ""
-              }`}
+              className={`text-lg ${todo.completed ? "line-through text-gray-400" : ""
+                }`}
             >
-              {todo.text}
+              {showAllText ? (
+                todo.text
+              ) : (
+                <span>
+                  {todo.text.split(" ").slice(0, 50).join(" ")}
+                  {todo.text.split(" ").length > 50 && (
+                    <button
+                      className="text-blue-500 ml-1"
+                      onClick={() => setShowAllText(true)}
+                    >
+                      See More
+                    </button>
+                  )}
+                </span>
+              )}
             </Typography>
 
-            {todo.image && (
-              <img
-                src={todo.image}
-                alt="Todo Image"
-                className="w-96 rounded-lg mt-2"
-              />
+            {todo.images && (
+              <div className="mt-2 grid grid-cols-3 gap-2">
+                {showAllImages
+                  ? todo.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`Image ${index}`}
+                      className="w-32 h-32 rounded-lg cursor-pointer"
+                      onClick={() => openFullscreenImage(image)}
+                    />
+                  ))
+                  : todo.images.slice(0, 3).map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`Image ${index}`}
+                      className="w-32 h-32 rounded-lg cursor-pointer"
+                      onClick={() => openFullscreenImage(image)}
+                    />
+                  ))}
+                {todo.images.length > 3 && !showAllImages && (
+                  <button
+                    className="text-blue-500 mt-2"
+                    onClick={() => setShowAllImages(true)}
+                  >
+                    +{todo.images.length - 3} more
+                  </button>
+                )}
+              </div>
             )}
 
-          
             <Menu
               id="todo-menu"
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleCloseMenu}
             >
-              <MenuItem onClick={() => setIsEditing(true)}>
-                <BsPencil /> Edit
-              </MenuItem>
-              <MenuItem onClick={handleDeleteTodo}>
-                <FaTrash /> Delete
-              </MenuItem>
+              {isOwner ? (
+                <>
+                  <MenuItem onClick={() => setIsEditing(true)}>
+                    <BsPencil /> Edit
+                  </MenuItem>
+                  <MenuItem onClick={handleDeleteTodo}>
+                    <FaTrash /> Delete
+                  </MenuItem>
+                </>
+              ) : (
+                <MenuItem onClick={handleReportTodo}>
+                  <HiFlag /> Report
+                </MenuItem>
+              )}
             </Menu>
+
+            {/* Fullscreen Image Modal */}
+            {/* Fullscreen Image Modal */}
+            {fullscreenImage && (
+              <div
+                className={`modal-overlay ${fullscreenImage ? 'active' : ''}`}
+                onClick={closeFullscreenImage}
+              >
+                <div className={`modal-container ${fullscreenImage ? 'active' : ''}`}>
+                  <button
+                    className="text-white btn-sm btn-circle bg-red-600 absolute top-2 right-2 text-xl cursor-pointer"
+                    onClick={closeFullscreenImage}
+                  >
+                    &times;
+                  </button>
+                  <img
+                    src={fullscreenImage}
+                    alt="Fullscreen"
+                    className="max-w-full max-h-full "
+                  />
+                </div>
+              </div>
+            )}
+
           </>
         )}
       </CardContent>
