@@ -106,13 +106,15 @@ const Task = ({ addTodo }) => {
 
   return (
     <Paper elevation={3} className={`facebook-style-post ${successMessage ? "success" : ""}`}>
+      {user && (
       <Box p={2}>
+      
         <Grid container spacing={2} alignItems="center">
           <Grid item>
             <Avatar src={user?.photoURL} alt="User Avatar" />
           </Grid>
           <Grid item xs>
-            {user && (
+         
               <TextField
                 fullWidth
                 multiline
@@ -123,10 +125,10 @@ const Task = ({ addTodo }) => {
                 onChange={(e) => setText(e.target.value)}
                 onKeyPress={handleKeyPress}
               />
-            )}
+      
           </Grid>
         </Grid>
-
+   
         {files.length > 0 && (
           <Box mt={2} display="flex" alignItems="center">
             {files.map((file, index) => (
@@ -176,6 +178,7 @@ const Task = ({ addTodo }) => {
           </Button>
         </Box>
       </Box>
+         )}
     </Paper>
   );
 };
