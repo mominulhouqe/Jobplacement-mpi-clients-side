@@ -149,6 +149,34 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     }))
     : [];
 
+    
+const formatTimeAgo = (timestamp) => {
+  const now = new Date();
+  const date = new Date(timestamp);
+
+  // Calculate the time difference in milliseconds
+  const timeDifference = now - date;
+
+  // Define time thresholds in milliseconds
+  const minute = 60 * 1000;
+  const hour = minute * 60;
+  const day = hour * 24;
+
+  if (timeDifference < minute) {
+    const seconds = Math.floor(timeDifference / 1000);
+    return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
+  } else if (timeDifference < hour) {
+    const minutes = Math.floor(timeDifference / minute);
+    return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+  } else if (timeDifference < day) {
+    const hours = Math.floor(timeDifference / hour);
+    return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+  } else {
+    // Display the full date when it's older than a day
+    return date.toLocaleString();
+  }
+};
+
   return (
     <Card
       sx={{ maxWidth: 345 }}
@@ -163,10 +191,10 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
               src={todo.photoURL}
               aria-label="user-profile"
             ></Avatar>
-            <div className="ml-2">
+           <div className="ml-2">
               <Typography variant="subtitle1">{todo.userName}</Typography>
               <Typography variant="caption" color="textSecondary">
-                {new Date(todo.timestamp).toLocaleString()}
+                {formatTimeAgo(todo.timestamp)}
               </Typography>
             </div>
           </div>
@@ -284,7 +312,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
               )}
             </Menu>
 
-            {/* Fullscreen Image Modal */}
             {/* Fullscreen Image Modal */}
             {fullscreenImage && (
               <div
