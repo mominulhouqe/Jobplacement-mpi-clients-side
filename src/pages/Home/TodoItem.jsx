@@ -17,18 +17,22 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../../provider/AuthProvider";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import './Todos.css'
+
 const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(todo.text);
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useContext(AuthContext);
-  const [showAllText, setShowAllText] = useState(false);
-
+  const [showMoreText, setShowMoreText] = useState(false);
+  
   const [showAllImages, setShowAllImages] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [reporting, setReporting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
 
   const openFullscreenImage = (image) => {
     setFullscreenImage(image);
@@ -38,10 +42,16 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     setFullscreenImage(null);
   };
 
+  const toggleShowMoreText = () => {
+    setShowMoreText(!showMoreText);
+  };
+
   const isOwner = user && user.uid === todo.userId;
 
   const handleUpdateTodo = async () => {
     try {
+      setIsLoading(true);
+
       await axios.put(
         `https://blogs-server-seven.vercel.app/api/todos/${todo._id}`,
         {
@@ -68,15 +78,21 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         title: "Error",
         text: "An error occurred while updating the post.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleDeleteTodo = async () => {
     try {
+      setIsLoading(true);
+
       await axios.delete(
         `https://blogs-server-seven.vercel.app/api/todos/${todo._id}`
       );
+
       onDelete(todo._id);
+
       Swal.fire({
         icon: "success",
         title: "Post Deleted",
@@ -89,18 +105,21 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         title: "Error",
         text: "An error occurred while deleting the post.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleReportTodo = async () => {
     if (reporting) {
-      // User has already reported, so don't allow reporting again
       return;
     }
 
     try {
+      setIsLoading(true);
+
       await axios.post(
-        `https://blogs-server-seven.vercel.app/api/todosReports`, // Replace with your API endpoint
+        `https://blogs-server-seven.vercel.app/api/todosReports`,
         {
           text,
           photoURL: user.photoURL,
@@ -108,7 +127,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
           email: user.email,
           timestamp: new Date().toISOString(),
           todoId: todo._id,
-          reporterId: user.uid, // Assuming user has an ID
+          reporterId: user.uid,
         }
       );
 
@@ -129,6 +148,8 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         title: "Error",
         text: "An error occurred while reporting the post.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -149,194 +170,208 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     }))
     : [];
 
-    
-const formatTimeAgo = (timestamp) => {
-  const now = new Date();
-  const date = new Date(timestamp);
+  const formatTimeAgo = (timestamp) => {
+    const now = new Date();
+    const date = new Date(timestamp);
 
-  // Calculate the time difference in milliseconds
-  const timeDifference = now - date;
+    const timeDifference = now - date;
 
-  // Define time thresholds in milliseconds
-  const minute = 60 * 1000;
-  const hour = minute * 60;
-  const day = hour * 24;
+    const minute = 60 * 1000;
+    const hour = minute * 60;
+    const day = hour * 24;
 
-  if (timeDifference < minute) {
-    const seconds = Math.floor(timeDifference / 1000);
-    return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
-  } else if (timeDifference < hour) {
-    const minutes = Math.floor(timeDifference / minute);
-    return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
-  } else if (timeDifference < day) {
-    const hours = Math.floor(timeDifference / hour);
-    return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
-  } else {
-    // Display the full date when it's older than a day
-    return date.toLocaleString();
-  }
-};
+    if (timeDifference < minute) {
+      const seconds = Math.floor(timeDifference / 1000);
+      return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
+    } else if (timeDifference < hour) {
+      const minutes = Math.floor(timeDifference / minute);
+      return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+    } else if (timeDifference < day) {
+      const hours = Math.floor(timeDifference / hour);
+      return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+    } else {
+      return date.toLocaleString();
+    }
+  };
+
 
   return (
     <Card
-      sx={{ maxWidth: 345 }}
+      sx={{
+        maxWidth: "100%",
+      }}
       className={`border rounded-lg mx-auto container overflow-hidden shadow-md mt-2 mb-2 ${isEditing ? "bg-gray-100" : ""
         }`}
     >
-      <CardContent>
-        <div className="flex justify-between mb-4">
-          <div className="flex items-center">
-            <Avatar
-              sx={{ bgcolor: red[500] }}
-              src={todo.photoURL}
-              aria-label="user-profile"
-            ></Avatar>
-           <div className="ml-2">
-              <Typography variant="subtitle1">{todo.userName}</Typography>
-              <Typography variant="caption" color="textSecondary">
-                {formatTimeAgo(todo.timestamp)}
-              </Typography>
-            </div>
-          </div>
-          <CardActions disableSpacing>
-            {isOwner && (
-              <IconButton
-                onClick={isEditing ? null : handleMenuClick}
-                aria-controls="todo-menu"
-                aria-haspopup="true"
-              >
-                <MoreVertIcon />
-              </IconButton>
-            )}
-            {!isOwner && (
-              <IconButton onClick={handleReportTodo}>
-                <HiFlag />
-              </IconButton>
-            )}
-          </CardActions>
+      {isLoading ? (
+        <div className="text-center mt-4">
+          <CircularProgress />
         </div>
-
-        {isEditing ? (
-          <>
-            <textarea
-              rows="3"
-              className="border border-gray-300 rounded-lg px-2 py-1 resize-none w-full"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-            ></textarea>
-            <div className="flex justify-end mt-2">
-              <button
-                className="bg-blue-500 text-white px-3 py-1 rounded"
-                onClick={handleUpdateTodo}
-              >
-                Save
-              </button>
+      ) : (
+        <CardContent>
+          <div className="flex justify-between mb-4">
+            <div className="flex items-center">
+              <Avatar
+                sx={{ bgcolor: red[500] }}
+                src={todo.photoURL}
+                aria-label="user-profile"
+              ></Avatar>
+              <div className="ml-2">
+                <Typography variant="subtitle1">{todo.userName}</Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {formatTimeAgo(todo.timestamp)}
+                </Typography>
+              </div>
             </div>
-          </>
-        ) : (
-          <>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              className={`text-lg ${todo.completed ? "line-through text-gray-400" : ""
-                }`}
-            >
-              {showAllText ? (
-                todo.text
-              ) : (
-                <span>
-                  {todo.text.split(" ").slice(0, 50).join(" ")}
-                  {todo.text.split(" ").length > 50 && (
-                    <button
-                      className="text-blue-500 ml-1"
-                      onClick={() => setShowAllText(true)}
-                    >
-                      See More
-                    </button>
-                  )}
-                </span>
+            <CardActions disableSpacing>
+              {!isEditing && (
+                <IconButton
+                  onClick={handleMenuClick}
+                  aria-controls="todo-menu"
+                  aria-haspopup="true"
+                >
+                  <MoreVertIcon />
+                </IconButton>
               )}
-            </Typography>
+              {!isOwner && (
+                <IconButton onClick={handleReportTodo}>
+                  {/* <HiFlag /> */}
+                </IconButton>
+              )}
+            </CardActions>
+          </div>
 
-            {todo.images && (
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                {showAllImages
-                  ? todo.images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Image ${index}`}
-                      className="w-32 h-32 rounded-lg cursor-pointer"
-                      onClick={() => openFullscreenImage(image)}
-                    />
-                  ))
-                  : todo.images.slice(0, 3).map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Image ${index}`}
-                      className="w-32 h-32 rounded-lg cursor-pointer"
-                      onClick={() => openFullscreenImage(image)}
-                    />
-                  ))}
-                {todo.images.length > 3 && !showAllImages && (
+          {isEditing ? (
+            <>
+              <textarea
+                rows="3"
+                className="border border-gray-300 rounded-lg px-2 py-1 resize-none w-full"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+              ></textarea>
+              <div className="flex justify-end mt-2">
+                <button
+                  className="bg-blue-500 text-white px-3 py-1 rounded"
+                  onClick={handleUpdateTodo}
+                >
+                  Save
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+                <Typography
+            variant="body2"
+            color="text.secondary"
+            className={`text-lg ${todo.completed ? "line-through text-gray-400" : ""
+              }`}
+          >
+          {showMoreText || todo.text.split(" ").length <= 50 ? (
+              <>
+                {todo.text}
+                {todo.text.split(" ").length > 50 && (
                   <button
-                    className="text-blue-500 mt-2"
-                    onClick={() => setShowAllImages(true)}
+                    className="text-blue-500 ml-1"
+                    onClick={toggleShowMoreText}
                   >
-                    +{todo.images.length - 3} more
+                    See Less
                   </button>
                 )}
-              </div>
+              </>
+            ) : (
+              <>
+                {todo.text.split(" ").slice(0, 50).join(" ")}
+                <button
+                  className="text-blue-500 ml-1"
+                  onClick={toggleShowMoreText}
+                >
+                  See More
+                </button>
+              </>
             )}
+        
+          </Typography>
 
-            <Menu
-              id="todo-menu"
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleCloseMenu}
-            >
-              {isOwner ? (
-                <>
-                  <MenuItem onClick={() => setIsEditing(true)}>
-                    <BsPencil /> Edit
-                  </MenuItem>
-                  <MenuItem onClick={handleDeleteTodo}>
-                    <FaTrash /> Delete
-                  </MenuItem>
-                </>
-              ) : (
-                <MenuItem onClick={handleReportTodo}>
-                  <HiFlag /> Report
-                </MenuItem>
-              )}
-            </Menu>
-
-            {/* Fullscreen Image Modal */}
-            {fullscreenImage && (
-              <div
-                className={`modal-overlay ${fullscreenImage ? 'active' : ''}`}
-                onClick={closeFullscreenImage}
-              >
-                <div className={`modal-container ${fullscreenImage ? 'active' : ''}`}>
-                  <button
-                    className="text-white btn-sm btn-circle bg-red-600 absolute top-2 right-2 text-xl cursor-pointer"
-                    onClick={closeFullscreenImage}
-                  >
-                    &times;
-                  </button>
-                  <img
-                    src={fullscreenImage}
-                    alt="Fullscreen"
-                    className="max-w-full max-h-full "
-                  />
+              {todo.images && (
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  {showAllImages
+                    ? todo.images.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`Image ${index}`}
+                        className="w-32 h-32 rounded-lg cursor-pointer"
+                        onClick={() => openFullscreenImage(image)}
+                      />
+                    ))
+                    : todo.images.slice(0, 3).map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`Image ${index}`}
+                        className="w-32 h-32 rounded-lg cursor-pointer"
+                        onClick={() => openFullscreenImage(image)}
+                      />
+                    ))}
+                  {todo.images.length > 3 && !showAllImages && (
+                    <button
+                      className="text-blue-500 mt-2"
+                      onClick={() => setShowAllImages(true)}
+                    >
+                      +{todo.images.length - 3} more
+                    </button>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
 
-          </>
-        )}
-      </CardContent>
+              <Menu
+                id="todo-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleCloseMenu}
+              >
+                {isOwner ? (
+                  <>
+                    <MenuItem onClick={() => setIsEditing(true)}>
+                      <BsPencil /> Edit
+                    </MenuItem>
+                    <MenuItem onClick={handleDeleteTodo}>
+                      <FaTrash /> Delete
+                    </MenuItem>
+                  </>
+                ) : (
+                  <MenuItem onClick={handleReportTodo}>
+                    <HiFlag /> Report
+                  </MenuItem>
+                )}
+              </Menu>
+
+              {/* Fullscreen Image Modal */}
+              {fullscreenImage && (
+                <div
+                  className={`modal-overlay ${fullscreenImage ? 'active' : ''}`}
+                  onClick={closeFullscreenImage}
+                >
+                  <div className={`modal-container ${fullscreenImage ? 'active' : ''}`}>
+                    <button
+                      className="text-white btn-sm btn-circle bg-red-600 absolute top-2 right-2 text-xl cursor-pointer"
+                      onClick={closeFullscreenImage}
+                    >
+                      &times;
+                    </button>
+                    <img
+                      src={fullscreenImage}
+                      alt="Fullscreen"
+                      className="max-w-full max-h-full "
+                    />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      )}
+
       <ToastContainer />
     </Card>
   );

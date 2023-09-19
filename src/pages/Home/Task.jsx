@@ -8,12 +8,16 @@ import Grid from "@mui/material/Grid";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Avatar from "@mui/material/Avatar";
 import AddIcon from "@mui/icons-material/Add";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 const img_hosting_token = import.meta.env.VITE_Image_Upload_token;
 
 const Task = ({ addTodo }) => {
   const [text, setText] = useState("");
   const [files, setFiles] = useState([]); // State to store the selected files
+  const [successMessage, setSuccessMessage] = useState(""); // State to manage success message
 
   const { user } = useContext(AuthContext);
 
@@ -22,24 +26,24 @@ const Task = ({ addTodo }) => {
       // Check if the input is empty and no files are selected
       return; // Don't proceed if the input is invalid
     }
-  
+
     try {
       const imgURLs = [];
-  
+
       // Check if files are selected for image upload
       if (files.length > 0) {
         const uploadPromises = files.map(async (file) => {
           const formData = new FormData();
           formData.append("image", file);
-  
+
           const img_hosting_url = `https://api.imgbb.com/1/upload?key=${img_hosting_token}`;
           const response = await fetch(img_hosting_url, {
             method: "POST",
             body: formData,
           });
-  
+
           const imgResponse = await response.json();
-  
+
           if (imgResponse.success) {
             imgURLs.push(imgResponse.data.display_url);
           } else {
@@ -47,11 +51,11 @@ const Task = ({ addTodo }) => {
             console.error("Image upload failed:", imgResponse.error.message);
           }
         });
-  
+
         // Wait for all image uploads to complete
         await Promise.all(uploadPromises);
       }
-  
+
       const newTodo = {
         text,
         photoURL: user.photoURL,
@@ -62,19 +66,24 @@ const Task = ({ addTodo }) => {
         userId: user.uid,
         // Add any other properties you need for your todo
       };
-  
-      // Update the UI with the new todo immediately
-      addTodo(newTodo);
-  
+
       // Now make the API request to add the todo to the server
       const apiResponse = await axios.post(
         "https://blogs-server-seven.vercel.app/api/todos",
         newTodo
       );
-  
+
       // Handle a successful API response if needed
       console.log("Todo added successfully:", apiResponse.data);
-  
+
+      // Update the success message
+      setSuccessMessage("Todo added successfully!");
+
+      // Clear the success message after a few seconds (e.g., 3 seconds)
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
+
       setText("");
       setFiles([]); // Reset the selected files after adding the todo
     } catch (error) {
@@ -82,8 +91,6 @@ const Task = ({ addTodo }) => {
       console.error("Error adding Todo:", error);
     }
   };
-  
-
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -97,65 +104,79 @@ const Task = ({ addTodo }) => {
     setFiles([...files, ...newFilesArray]);
   };
 
-
   return (
-    <div className="facebook-style-post">
-      <div className="post-header">
-        <Avatar src="" alt="User Avatar" />
-        <TextField
-          fullWidth
-          multiline
-          rows={2}
-          label="What's on your mind?"
-          variant="outlined"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyPress={handleKeyPress}
-        />
-      </div>
-      {files.length > 0 && (
-        <div className="selected-images">
-          {files.map((file, index) => (
-            <img
-              key={index}
-              className="border m-1"
-              src={URL.createObjectURL(file)}
-              alt={`Selected ${index + 1}`}
-              width="50px"
-            />
-          ))}
-        </div>
-      )}
+    <Paper elevation={3} className={`facebook-style-post ${successMessage ? "success" : ""}`}>
+      <Box p={2}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item>
+            <Avatar src={user?.photoURL} alt="User Avatar" />
+          </Grid>
+          <Grid item xs>
+            {user && (
+              <TextField
+                fullWidth
+                multiline
+                rows={2}
+                label="What's on your mind?"
+                variant="outlined"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyPress={handleKeyPress}
+              />
+            )}
+          </Grid>
+        </Grid>
 
-      <div className="post-actions">
-        <input
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-          id="file-input"
-          onChange={handleFileChange}
-        />
-        <label htmlFor="file-input">
+        {files.length > 0 && (
+          <Box mt={2} display="flex" alignItems="center">
+            {files.map((file, index) => (
+              <img
+                key={index}
+                className="border m-1"
+                src={URL.createObjectURL(file)}
+                alt={`Selected ${index + 1}`}
+                width="50px"
+              />
+            ))}
+          </Box>
+        )}
+
+        {successMessage && (
+          <Typography variant="body1" color="success" mt={2}>
+            {successMessage}
+          </Typography>
+        )}
+
+        <Box mt={2} display="flex" alignItems="center" justifyContent="space-between">
+          {user && (
+            <>
+              <input type="file" accept="image/*" style={{ display: "none" }} id="file-input" onChange={handleFileChange} />
+
+              <label htmlFor="file-input">
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  component="span"
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Photo/Video
+                </Button>
+              </label>
+            </>
+          )}
+
           <Button
-            variant="outlined"
+            variant="contained"
             color="primary"
-            component="span"
-            startIcon={<CloudUploadIcon />}
+            onClick={handleAddTodo}
+            disabled={!text.trim() && !files.length}
+            startIcon={<AddIcon />}
           >
-            Photo/Video
+            Post
           </Button>
-        </label>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddTodo}
-          disabled={!text.trim() && !files}
-          startIcon={<AddIcon />}
-        >
-          Post
-        </Button>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Paper>
   );
 };
 
