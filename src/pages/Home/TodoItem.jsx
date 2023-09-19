@@ -27,12 +27,12 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useContext(AuthContext);
   const [showMoreText, setShowMoreText] = useState(false);
-  
+
   const [showAllImages, setShowAllImages] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [reporting, setReporting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
 
   const openFullscreenImage = (image) => {
     setFullscreenImage(image);
@@ -260,56 +260,56 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             </>
           ) : (
             <>
-                <Typography
-            variant="body2"
-            color="text.secondary"
-            className={`text-lg ${todo.completed ? "line-through text-gray-400" : ""
-              }`}
-          >
-          {showMoreText || todo.text.split(" ").length <= 50 ? (
-              <>
-                {todo.text}
-                {todo.text.split(" ").length > 50 && (
-                  <button
-                    className="text-blue-500 ml-1"
-                    onClick={toggleShowMoreText}
-                  >
-                    See Less
-                  </button>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                className={`text-lg ${todo.completed ? "line-through text-gray-400" : ""
+                  }`}
+              >
+                {showMoreText || todo.text.split(" ").length <= 50 ? (
+                  <>
+                    {todo.text}
+                    {todo.text.split(" ").length > 50 && (
+                      <button
+                        className="text-blue-500 ml-1"
+                        onClick={toggleShowMoreText}
+                      >
+                        See Less
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {todo.text.split(" ").slice(0, 50).join(" ")}
+                    <button
+                      className="text-blue-500 ml-1"
+                      onClick={toggleShowMoreText}
+                    >
+                      See More
+                    </button>
+                  </>
                 )}
-              </>
-            ) : (
-              <>
-                {todo.text.split(" ").slice(0, 50).join(" ")}
-                <button
-                  className="text-blue-500 ml-1"
-                  onClick={toggleShowMoreText}
-                >
-                  See More
-                </button>
-              </>
-            )}
-        
-          </Typography>
+
+              </Typography>
 
               {todo.images && (
-                <div className="mt-2 grid grid-cols-3 gap-2">
+                <div className="mt-2 flex flex-wrap gap-2 justify-center items-center">
                   {showAllImages
                     ? todo.images.map((image, index) => (
                       <img
                         key={index}
                         src={image}
                         alt={`Image ${index}`}
-                        className="w-32 h-32 rounded-lg cursor-pointer"
+                        className="w-96 h-auto rounded-lg cursor-pointer"
                         onClick={() => openFullscreenImage(image)}
                       />
                     ))
-                    : todo.images.slice(0, 3).map((image, index) => (
+                    : todo.images.slice(0, 2).map((image, index) => (
                       <img
                         key={index}
                         src={image}
                         alt={`Image ${index}`}
-                        className="w-32 h-32 rounded-lg cursor-pointer"
+                        className="w-96 h-auto rounded-lg cursor-pointer"
                         onClick={() => openFullscreenImage(image)}
                       />
                     ))}
@@ -323,6 +323,8 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                   )}
                 </div>
               )}
+
+
 
               <Menu
                 id="todo-menu"
