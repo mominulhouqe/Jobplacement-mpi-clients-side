@@ -293,7 +293,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
               </Typography>
 
               {todo.images && (
-                <div className="mt-2 flex flex-wrap gap-2 justify-center items-center">
+                <div className="mt-2 flex flex-wrap justify-center items-center">
                   {showAllImages
                     ? todo.images.map((image, index) => (
                       <img

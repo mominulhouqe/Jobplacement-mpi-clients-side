@@ -1,20 +1,39 @@
 import React, { useContext, useState } from "react";
-import { FaGoogle } from "react-icons/fa";
+import {
+  Avatar,
+  Button,
+  CssBaseline,
+  TextField,
+  Grid,
+  Typography,
+  Container,
+  Box,
+  Paper,
+  IconButton,
+  InputAdornment,
+  FormControl,
+} from "@mui/material";
+import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import Swal from "sweetalert2";
-import { updateProfile } from "firebase/auth";
-import { getAuth } from "firebase/auth";
-import swal from "sweetalert";
-import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../provider/AuthProvider";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  getAuth,
+} from "firebase/auth";
+import { Link, Navigate } from "react-router-dom";
 import app from "../../firebase.config";
 
 const Register = () => {
   const auth = getAuth(app);
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
-  const { createUser, signInGoogle } = useContext(AuthContext);
+  const { user, signInGoogle } = useContext(AuthContext);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
-  const handleRegister = (event) => {
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  const handleRegister = async (event) => {
     event.preventDefault();
     const form = event.target;
     const name = form.name.value;
@@ -22,148 +41,161 @@ const Register = () => {
     const password = form.password.value;
     const photoURL = form.photoURL.value;
 
-    if (!/(?=.*[a-z])/.test(password)) {
-      swal(
-        "Oops",
-        "Try to include at least one lowercase letter in your password.",
-        "error"
+    // Your password validation logic here
+    // For example: if (!/(?=.*[a-z])/.test(password)) { ... }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
       );
+
+      // Update the user's profile with name and photoURL
+      await updateProfile(userCredential.user, {
+        displayName: name,
+        photoURL: photoURL, // Ensure that the photoURL is correctly passed here
+      });
+    } catch (error) {
+      let errorMessage = "Registration failed. Please try again.";
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      Swal.fire("Error!", errorMessage, "error");
       return;
     }
 
-    createUser(email, password)
-      .then((result) => {
-        const user = result.user;
-        Swal.fire("You Register Successfully!", "success");
-        form.reset();
-        navigate("/login");
-        return updateProfile(auth.currentUser, {
-          displayName: name,
-          photoURL: photoURL,
-        });
-      })
-      .catch((error) => {
-        let errorMessage = "Registration failed. Please try again.";
-        if (error.message) {
-          errorMessage = error.message;
-        }
-        Swal.fire("Error!", errorMessage, "error");
-      });
+    Swal.fire("You Register Successfully!", "success");
   };
 
-  const handleGooglePopup = () => {
-    signInGoogle()
-      .then((result) => {
-        const loggedUser = result.user;
-        Swal.fire("You Login Successfully!", "success");
-        setUser(loggedUser);
-        navigate("/");
-      })
-      .catch((error) => {
-        let errorMessage = "Registration failed. Please try again.";
-        if (error.message) {
-          errorMessage = error.message;
-        }
-        Swal.fire("Error!", errorMessage, "error");
-      });
+  const handleGooglePopup = async () => {
+    try {
+      await signInGoogle();
+    } catch (error) {
+      let errorMessage = "Registration failed. Please try again.";
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      Swal.fire("Error!", errorMessage, "error");
+      return;
+    }
+
+    Swal.fire("You Login Successfully!", "success");
   };
 
   return (
-    <div className="flex justify-center items-center bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-4 bg-white shadow-md rounded-lg">
-        <h2 className="text-4xl font-bold text-center">Please Register !!!</h2>
-        <form onSubmit={handleRegister}>
-          <div className="lg:flex justify-center items-center gap-2">
-            <div className="mb-4">
-              <label
-                htmlFor="name"
-                className="block text-gray-700 font-semibold mb-2"
-              >
-                Name
-              </label>
-              <input
-                type="name"
-                id="name"
-                name="name"
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-500"
-                placeholder="Enter your name"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="photoURL"
-                className="block text-gray-700 font-semibold mb-2"
-              >
-                Photo URL
-              </label>
-              <input
-                type="url"
-                id="photoURL"
-                name="photoURL"
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-500"
-                placeholder="Enter your photo URL"
-              />
-            </div>
-          </div>
-        
-            <div className="mb-4">
-              <label
-                htmlFor="email"
-                className="block text-gray-700 font-semibold mb-2"
-              >
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        minHeight: "100vh",
+        background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+      }}
+    >
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Paper
+          elevation={3}
+          sx={{
+            padding: 4,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          {user && <Navigate to="/login" />} {/* Redirect if user is logged in */}
+          <Avatar
+            sx={{
+              m: 1,
+              bgcolor: "secondary.main",
+            }}
+          >
+            {/* You can place an icon or user image here */}
+          </Avatar>
+          <Typography variant="h5" component="h1" sx={{ mt: 2 }}>
+            Register
+          </Typography>
+          <form onSubmit={handleRegister} style={{ width: "100%", marginTop: 2 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="name"
+              label="Name"
+              name="name"
+              autoComplete="name"
+            />
+            <TextField
+              margin="normal"
+              fullWidth
+              id="photoURL"
+              label="Photo URL"
+              name="photoURL"
+              autoComplete="photoURL"
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+            />
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <TextField
                 required
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-500"
-                placeholder="Enter your email address"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="password"
-                className="block text-gray-700 font-semibold mb-2"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
+                fullWidth
                 name="password"
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-500"
-                placeholder="Enter your password"
+                label="Password"
+                type={passwordVisible ? "text" : "password"}
+                id="password"
+                autoComplete="current-password"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={togglePasswordVisibility}
+                        edge="end"
+                      >
+                        {passwordVisible ? <FaEye /> : <FaEyeSlash />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </div>
-        
-
-          <div className="flex items-center space-x-2 justify-between">
-            <button
+            </FormControl>
+            <Button
               type="submit"
-              className="w-1/2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              fullWidth
+              variant="contained"
+              color="primary"
+              sx={{ mt: 3, mb: 2 }}
             >
               Sign Up
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              fullWidth
+              variant="contained"
+              color="secondary"
+              startIcon={<FaGoogle />}
               onClick={handleGooglePopup}
-              className="w-1/2 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
-              <FaGoogle className="inline-block mr-2" />
               Sign Up with Google
-            </button>
-          </div>
-          <p className="text-center">
-            Already have an account? Please{" "}
-            <Link className="text-blue-500 underline font-semibold" to="/login">
-              Login
-            </Link>
-          </p>
-        </form>
-      </div>
-    </div>
+            </Button>
+            <Grid container>
+              <Grid item xs>
+                <Link to="/login" variant="body2">
+                  Already have an account? Sign In
+                </Link>
+              </Grid>
+            </Grid>
+          </form>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 
