@@ -20,6 +20,10 @@ import { AuthContext } from "../../provider/AuthProvider";
 import CircularProgress from "@mui/material/CircularProgress";
 import { FaThumbsUp } from "react-icons/fa";
 import { FaWhatsapp } from "react-icons/fa";
+import {
+
+  FaComment,
+} from "react-icons/fa";
 
 import './Todos.css'
 
@@ -37,6 +41,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [likeCount, setLikeCount] = useState(0); // Initialize likeCount with 0
+  const [commentInputVisible, setCommentInputVisible] = useState(false);
 
   const openFullscreenImage = (image) => {
     setFullscreenImage(image);
@@ -290,7 +295,9 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     fetchComments();
   }, [todo._id]);
 
-
+  const toggleCommentInput = () => {
+    setCommentInputVisible(!commentInputVisible);
+  };
   const handleShareWhatsApp = () => {
     const shareURL = `whatsapp://send?text=${encodeURIComponent(
       `Check out this todo item: ${window.location.href}`
@@ -299,7 +306,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   };
 
   const handleShareFacebook = () => {
-    const shareURL = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+    const shareURL = `https://www.facebook.com/=${encodeURIComponent(
       window.location.href
     )}`;
     window.open(shareURL);
@@ -355,23 +362,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             </div>
           </div>
           <CardActions disableSpacing>
-            {user && todo.likes && !todo.likes.includes(user.uid) ? (
-              <IconButton onClick={handleLikeTodo}>
-                <FaThumbsUp />
-              </IconButton>
-            ) : (
-              <IconButton className="liked" onClick={handleLikeTodo}>
-                <FaThumbsUp />
-              </IconButton>
-            )}
-
-            {/* Add Share Buttons */}
-            <IconButton onClick={handleShareWhatsApp}>
-              <FaWhatsapp />
-            </IconButton>
-            <IconButton onClick={handleShareFacebook}>
-              <FaFacebook />
-            </IconButton>
+         
             {!isEditing && (
               <IconButton
                 onClick={handleMenuClick}
@@ -386,7 +377,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                 {/* <HiFlag /> */}
               </IconButton>
             )}
-            <span>{likeCount} Likes</span>
+            
           </CardActions>
         </div>
 
@@ -519,27 +510,74 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
           </>
         )}
 
-        {/* Comment Section */}
-        <div>
-          <h2>Comments</h2>
-          <ul>
-            {Array.isArray(comments) &&
-              comments.map((comment, index) => (
-                <li key={index}>
-                  <p>{comment.text}</p>
-                </li>
-              ))}
-          </ul>
-          <div>
-            <textarea
-              rows="3"
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Add a comment..."
-            />
-            <button onClick={handleAddComment}>Add Comment</button>
-          </div>
-        </div>
+
+
+
+  <div className="flex justify-between items-center mb-4">
+    <div className="flex items-center">
+      <div className="mr-4">
+        {user && todo.likes && !todo.likes.includes(user.uid) ? (
+          <IconButton onClick={handleLikeTodo} className="text-blue-500">
+            <FaThumbsUp />
+            <span className="ml-1">{likeCount} Likes</span>
+          </IconButton>
+        ) : (
+          <IconButton className="liked text-blue-500" onClick={handleLikeTodo}>
+            <FaThumbsUp />
+            <span className="ml-1">{likeCount} </span>
+          </IconButton>
+        )}
+      </div>
+      <div>
+        <IconButton onClick={handleShareWhatsApp} className="text-green-500">
+          <FaWhatsapp />
+        </IconButton>
+        <IconButton onClick={handleShareFacebook} className="text-blue-500">
+          <FaFacebook />
+        </IconButton>
+        <IconButton onClick={toggleCommentInput} className="text-gray-500">
+          <FaComment />
+        </IconButton>
+      </div>
+    </div>
+  </div>
+
+
+  <div>
+    <h2>Comments</h2>
+    <ul>
+      {Array.isArray(comments) &&
+        comments.map((comment, index) => (
+          <li key={index}>
+            <p>{comment.text}</p>
+          </li>
+        ))}
+    </ul>
+    <div className="flex items-center">
+      {commentInputVisible ? (
+        <textarea
+          rows="3"
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="Add a comment..."
+        />
+      ) : null}
+      <IconButton
+        onClick={toggleCommentInput}
+        className="text-blue-500"
+      >
+        <FaComment />
+      </IconButton>
+      {commentInputVisible ? (
+        <IconButton
+          onClick={handleAddComment}
+          className="text-blue-500"
+        >
+          <FaComment />
+        </IconButton>
+      ) : null}
+    </div>
+  </div>
 
       </CardContent>
 
