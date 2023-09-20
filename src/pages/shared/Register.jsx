@@ -4,10 +4,13 @@ import {
   Button,
   CssBaseline,
   TextField,
+  FormControlLabel,
+  Checkbox,
+  Link,
   Grid,
+  Box,
   Typography,
   Container,
-  Box,
   Paper,
   IconButton,
   InputAdornment,
@@ -21,16 +24,24 @@ import {
   updateProfile,
   getAuth,
 } from "firebase/auth";
-import { Link, Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import app from "../../firebase.config";
+import image from '../../assets/asd.jpg'
 
 const Register = () => {
   const auth = getAuth(app);
   const { user, signInGoogle } = useContext(AuthContext);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
   };
 
   const handleRegister = async (event) => {
@@ -39,33 +50,52 @@ const Register = () => {
     const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
-    const photoURL = form.photoURL.value;
 
-    // Your password validation logic here
-    // For example: if (!/(?=.*[a-z])/.test(password)) { ... }
+    if (selectedFile) {
+      try {
+        const img_hosting_token = import.meta.env.VITE_Image_Upload_token;
+        const formData = new FormData();
+        formData.append("image", selectedFile);
 
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+        const img_hosting_url = `https://api.imgbb.com/1/upload?key=${img_hosting_token}`;
+        const response = await fetch(img_hosting_url, {
+          method: "POST",
+          body: formData,
+        });
 
-      // Update the user's profile with name and photoURL
-      await updateProfile(userCredential.user, {
-        displayName: name,
-        photoURL: photoURL, // Ensure that the photoURL is correctly passed here
-      });
-    } catch (error) {
-      let errorMessage = "Registration failed. Please try again.";
-      if (error.message) {
-        errorMessage = error.message;
+        const imgResponse = await response.json();
+
+        if (imgResponse.success) {
+          const photoURL = imgResponse.data.display_url;
+
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+
+          await updateProfile(userCredential.user, {
+            displayName: name,
+            photoURL: photoURL,
+          });
+
+          Swal.fire("You Register Successfully!", "success");
+          navigate("/login"); // Redirect to login page
+        } else {
+          console.error("Image upload failed:", imgResponse.error.message);
+          Swal.fire("Error!", "Image upload failed.", "error");
+        }
+      } catch (error) {
+        let errorMessage = "Registration failed. Please try again.";
+        if (error.message) {
+          errorMessage = error.message;
+        }
+        Swal.fire("Error!", errorMessage, "error");
+        return;
       }
-      Swal.fire("Error!", errorMessage, "error");
-      return;
+    } else {
+      Swal.fire("Error!", "Please select a photo.", "error");
     }
-
-    Swal.fire("You Register Successfully!", "success");
   };
 
   const handleGooglePopup = async () => {
@@ -79,7 +109,6 @@ const Register = () => {
       Swal.fire("Error!", errorMessage, "error");
       return;
     }
-
     Swal.fire("You Login Successfully!", "success");
   };
 
@@ -90,10 +119,12 @@ const Register = () => {
         flexDirection: "column",
         alignItems: "center",
         minHeight: "100vh",
-        background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
       }}
     >
-      <Container component="main" maxWidth="xs">
+      <Container className="my-auto " component="main" maxWidth="xs">
         <CssBaseline />
         <Paper
           elevation={3}
@@ -103,19 +134,19 @@ const Register = () => {
             flexDirection: "column",
             alignItems: "center",
           }}
+          className="bg-opacity-400"
         >
-          {user && <Navigate to="/login" />} {/* Redirect if user is logged in */}
           <Avatar
             sx={{
               m: 1,
               bgcolor: "secondary.main",
             }}
-          >
-            {/* You can place an icon or user image here */}
-          </Avatar>
+          />
+
           <Typography variant="h5" component="h1" sx={{ mt: 2 }}>
             Register
           </Typography>
+
           <form onSubmit={handleRegister} style={{ width: "100%", marginTop: 2 }}>
             <TextField
               margin="normal"
@@ -126,14 +157,33 @@ const Register = () => {
               name="name"
               autoComplete="name"
             />
-            <TextField
-              margin="normal"
-              fullWidth
-              id="photoURL"
-              label="Photo URL"
-              name="photoURL"
-              autoComplete="photoURL"
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+              id="file-input"
             />
+            <label htmlFor="file-input">
+              <Button
+                variant="outlined"
+                component="span"
+                sx={{
+                  mt: 2,
+                  backgroundColor: "#2196F3",
+                  color: "#fff",
+                  '&:hover': {
+                    backgroundColor: "#1976D2",
+                  },
+                }}
+                fullWidth
+              >
+                Upload Photo
+              </Button>
+            </label>
+            {selectedFile && <span>Selected file: {selectedFile.name}</span>}
+
+
             <TextField
               margin="normal"
               required
