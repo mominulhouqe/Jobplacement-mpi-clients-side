@@ -20,12 +20,15 @@ import { AuthContext } from "../../provider/AuthProvider";
 import CircularProgress from "@mui/material/CircularProgress";
 import { FaThumbsUp } from "react-icons/fa";
 import { FaWhatsapp } from "react-icons/fa";
-import {
-
-  FaComment,
-} from "react-icons/fa";
-
-import './Todos.css'
+import { FaComment } from "react-icons/fa";
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import "./Todos.css";
 
 const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -40,8 +43,25 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
 
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-  const [likeCount, setLikeCount] = useState(0); // Initialize likeCount with 0
+  const [likeCount, setLikeCount] = useState(0);
   const [commentInputVisible, setCommentInputVisible] = useState(false);
+
+  // State for managing replies
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyText, setReplyText] = useState("");
+
+  const initialCommentDisplayCount = 2;
+  const [commentDisplayCount, setCommentDisplayCount] = useState(initialCommentDisplayCount);
+
+  const commentsToDisplay = comments.slice(0, commentDisplayCount);
+
+  const toggleCommentDisplay = () => {
+    if (commentDisplayCount === initialCommentDisplayCount) {
+      setCommentDisplayCount(comments.length);
+    } else {
+      setCommentDisplayCount(initialCommentDisplayCount);
+    }
+  };
 
   const openFullscreenImage = (image) => {
     setFullscreenImage(image);
@@ -54,13 +74,14 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const toggleShowMoreText = () => {
     setShowMoreText(!showMoreText);
   };
-
+  // Function to handle replying to a comment
+  const handleReplyToComment = (commentId) => {
+    setReplyingTo(commentId);
+  };
   const isOwner = user && user.uid === todo.userId;
 
   const handleUpdateTodo = async () => {
     try {
-
-
       await axios.put(
         `https://blogs-server-seven.vercel.app/api/todos/${todo._id}`,
         {
@@ -68,7 +89,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
           completed: todo.completed,
         }
       );
-
 
       onUpdate(todo._id, text);
 
@@ -87,15 +107,11 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         title: "Error",
         text: "An error occurred while updating the post.",
       });
-    } finally {
-      ;
     }
   };
 
   const handleDeleteTodo = async () => {
     try {
-
-
       await axios.delete(
         `https://blogs-server-seven.vercel.app/api/todos/${todo._id}`
       );
@@ -114,8 +130,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         title: "Error",
         text: "An error occurred while deleting the post.",
       });
-    } finally {
-      ;
     }
   };
 
@@ -125,8 +139,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     }
 
     try {
-
-
       await axios.post(
         `https://blogs-server-seven.vercel.app/api/todosReports`,
         {
@@ -157,8 +169,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         title: "Error",
         text: "An error occurred while reporting the post.",
       });
-    } finally {
-      ;
     }
   };
 
@@ -175,20 +185,15 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const handleLikeTodo = async () => {
     if (user) {
       try {
-
-
         await axios.post(
           `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/likes`,
           {
             userId: user.uid,
-            userName: user?.displayName, // Use user.displayName
+            userName: user?.displayName,
           }
         );
 
-        // Update the like count on the front end.
         setLikeCount(likeCount + 1);
-
-        console.log('Like request successful'); // Log a success message after the like request.
 
         toast.success("Liked the post!", {
           position: "top-right",
@@ -201,45 +206,42 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       } catch (error) {
         console.error("Error liking post:", error);
 
-        console.log('Like request failed. Error:', error); // Log the error message.
-
         Swal.fire({
           icon: "error",
           title: "Error",
           text: "An error occurred while liking the post.",
         });
-      } finally {
-        ;
       }
     } else {
       // Handle the case where the user is not authenticated.
       // You can show a login prompt or redirect the user to the login page.
+      // Example: Redirect to the login page
+      navigate('/login'); // Make sure 'history' is available in your component
     }
   };
-
-
   const handleAddComment = async () => {
     if (newComment.trim() !== "") {
       try {
-
-
-        // Make an API request to add a comment to the todo item.
-        await axios.post(
+        // Send a POST request to your API to add the comment.
+        const response = await axios.post(
           `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/comments`,
           {
             userId: user.uid,
             text: newComment,
+            userName: user?.displayName,
+            photoURL: user.photoURL,
+            email: user.email,
+            timestamp: new Date().toISOString(),
+            todoId: todo._id,
+
           }
         );
 
-        // Refresh the comments after adding a new comment.
-        const response = await axios.get(
-          `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/comments`
-        );
-        setComments(response.data);
-
         // Clear the comment input field.
         setNewComment("");
+
+        // Fetch comments after adding a new comment
+        fetchComments();
 
         toast.success("Comment added!", {
           position: "top-right",
@@ -256,11 +258,55 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
           title: "Error",
           text: "An error occurred while adding the comment.",
         });
-      } finally {
-        ;
+      }
+    } else {
+      // Handle the case where the user is not authenticated.
+      // You can show a login prompt or redirect the user to the login page.
+      // Example: Redirect to the login page
+      navigate('/login'); // Make sure 'history' is available in your component
+    }
+  };
+
+  // Function to submit a reply
+  const handleAddReply = async () => {
+    if (replyText.trim() !== "") {
+      try {
+        // Send a POST request to your API to add the reply.
+        const response = await axios.post(
+          `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/comments/${replyingTo}/replies`,
+          {
+            userId: user.uid,
+            text: replyText,
+            userName: user?.displayName,
+            userPhoto: user?.photoURL,
+          }
+        );
+
+        // Clear the reply input field and reset replyingTo
+        setReplyText("");
+        setReplyingTo(null);
+
+        // Fetch comments after adding a new reply
+        fetchComments();
+
+        toast.success("Reply added!", {
+          // Toast options...
+        });
+      } catch (error) {
+        console.error("Error adding reply:", error);
+        Swal.fire({
+          // Error handling...
+        });
       }
     }
   };
+
+  // Function to cancel replying to a comment
+  const cancelReply = () => {
+    setReplyingTo(null);
+    setReplyText("");
+  };
+
 
   useEffect(() => {
     const fetchLikes = async () => {
@@ -268,8 +314,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         const response = await axios.get(
           `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/likes`
         );
-        // Update the like count based on the fetched data.
-        console.log(response.data.likeCount);
         setLikeCount(response.data.likeCount);
       } catch (error) {
         console.error("Error fetching likes:", error);
@@ -279,25 +323,27 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     fetchLikes();
   }, [todo._id]);
 
-  // Fetch comments when the component mounts
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(
-          `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/comments`
-        );
-        setComments(response.data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
+  // Define a function to fetch comments
+  const fetchComments = async () => {
+    try {
+      const response = await axios.get(
+        `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/comments`
+      );
+      setComments(response.data);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
 
+  // Use the useEffect hook to fetch comments when todo._id changes
+  useEffect(() => {
     fetchComments();
   }, [todo._id]);
 
   const toggleCommentInput = () => {
     setCommentInputVisible(!commentInputVisible);
   };
+
   const handleShareWhatsApp = () => {
     const shareURL = `whatsapp://send?text=${encodeURIComponent(
       `Check out this todo item: ${window.location.href}`
@@ -311,6 +357,8 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     )}`;
     window.open(shareURL);
   };
+
+  const isLikedByUser = user && todo.likes && todo.likes.includes(user.uid);
 
   const formatTimeAgo = (timestamp) => {
     const now = new Date();
@@ -335,7 +383,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     }
   };
 
-
   return (
     <Card
       sx={{
@@ -344,8 +391,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       className={`border rounded-lg mx-auto container overflow-hidden shadow-md mt-2 mb-2 ${isEditing ? "bg-gray-100" : ""
         }`}
     >
-
-
       <CardContent>
         <div className="flex justify-between mb-4">
           <div className="flex items-center">
@@ -362,7 +407,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             </div>
           </div>
           <CardActions disableSpacing>
-         
             {!isEditing && (
               <IconButton
                 onClick={handleMenuClick}
@@ -377,7 +421,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                 {/* <HiFlag /> */}
               </IconButton>
             )}
-            
           </CardActions>
         </div>
 
@@ -429,7 +472,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                   </button>
                 </>
               )}
-
             </Typography>
 
             {todo.images && (
@@ -510,77 +552,113 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
           </>
         )}
 
+        <div className="flex items-center justify-between mb-4">
+          <div className="mr-4 flex justify-center items-center">
+            <IconButton onClick={handleLikeTodo}>
+              <FaThumbsUp
+                className={`text-blue-500 text-3xl ${isLikedByUser ? 'text-red-500' : ''}`}
+              />
+            </IconButton>
+            <span className="ml-1 text-green-700 text-xl font-medium"> {likeCount} </span>
+          </div>
 
+          <div className="flex items-center">
+            <IconButton onClick={handleShareWhatsApp} className="text-green-500">
+              <FaWhatsapp />
+            </IconButton>
+            <IconButton onClick={handleShareFacebook} className="text-facebook-blue">
+              <FaFacebook />
+            </IconButton>
+          </div>
+        </div>
 
+        <div>
 
-  <div className="flex justify-between items-center mb-4">
-    <div className="flex items-center">
-      <div className="mr-4">
-        {user && todo.likes && !todo.likes.includes(user.uid) ? (
-          <IconButton onClick={handleLikeTodo} className="text-blue-500">
-            <FaThumbsUp />
-            <span className="ml-1">{likeCount} Likes</span>
-          </IconButton>
-        ) : (
-          <IconButton className="liked text-blue-500" onClick={handleLikeTodo}>
-            <FaThumbsUp />
-            <span className="ml-1">{likeCount} </span>
-          </IconButton>
-        )}
-      </div>
-      <div>
-        <IconButton onClick={handleShareWhatsApp} className="text-green-500">
-          <FaWhatsapp />
-        </IconButton>
-        <IconButton onClick={handleShareFacebook} className="text-blue-500">
-          <FaFacebook />
-        </IconButton>
-        <IconButton onClick={toggleCommentInput} className="text-gray-500">
-          <FaComment />
-        </IconButton>
-      </div>
-    </div>
-  </div>
+          <div className="flex items-center mb-2">
+            <Avatar src={user?.photoURL} aria-label="user-profile" sx={{ width: 30, height: 30 }} />
+            <TextareaAutosize
+              rowsMin={3}
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Add a comment..."
+              className="w-full ml-2 outline-none resize-none border rounded p-1"
+            />
+            <Button onClick={handleAddComment} variant="contained" color="primary" className="ml-2 btn-sm">
+              Add
+            </Button>
+          </div>
 
+          <ul className="space-y-4 w-[97%] ml-auto">
+            {commentsToDisplay.map((comment, index) => (
+              <li key={index} className="flex items-start space-x-2 justify-center border p-2 rounded">
+                <Avatar src={comment.photoURL} aria-label="user-profile" sx={{ width: 30, height: 30 }} />
+                <div className="flex flex-col w-full">
+                  <div className="my-1">
+                    <Typography variant="subtitle1">{comment.userName}</Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      {formatTimeAgo(comment.timestamp)}
+                    </Typography>
+                  </div>
+                  <Paper elevation={0} className="p-2">
+                    <div className="flex items-start justify-between">
+                      <Typography variant="body2">- {comment.text}</Typography>
 
-  <div>
-    <h2>Comments</h2>
-    <ul>
-      {Array.isArray(comments) &&
-        comments.map((comment, index) => (
-          <li key={index}>
-            <p>{comment.text}</p>
-          </li>
-        ))}
-    </ul>
-    <div className="flex items-center">
-      {commentInputVisible ? (
-        <textarea
-          rows="3"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
-        />
-      ) : null}
-      <IconButton
-        onClick={toggleCommentInput}
-        className="text-blue-500"
-      >
-        <FaComment />
-      </IconButton>
-      {commentInputVisible ? (
-        <IconButton
-          onClick={handleAddComment}
-          className="text-blue-500"
-        >
-          <FaComment />
-        </IconButton>
-      ) : null}
-    </div>
-  </div>
+                      {replyingTo === comment._id && (
+                        <Paper elevation={3} className="p-2 rounded-lg mt-2">
+                          <div className="flex items-center">
+                            <Avatar src={user?.photoURL} aria-label="user-profile" sx={{ width: 40, height: 40 }} />
+                            <TextareaAutosize
+                              rowsMin={3}
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              placeholder="Add a reply..."
+                              className="w-full ml-2 outline-none resize-none"
+                            />
+                          </div>
+                          <Button onClick={handleAddReply} variant="contained" color="primary" className="mt-2">
+                            Add Reply
+                          </Button>
+                          <Button onClick={cancelReply} variant="outlined" color="secondary" className="mt-2 ml-2">
+                            Cancel
+                          </Button>
+                        </Paper>
+                      )}
+
+                      <Button
+                        onClick={() => handleReplyToComment(comment._id)}
+                        color="primary"
+                        className="text-blue-500 hover:text-blue-600 mt-2"
+                      >
+                        Reply
+                      </Button>
+                    </div>
+                  </Paper>
+                </div>
+              </li>
+            ))}
+            {comments.length > initialCommentDisplayCount && (
+              <li className="flex items-center justify-center mt-2">
+                <IconButton onClick={toggleCommentDisplay} size="small">
+                  {commentDisplayCount === initialCommentDisplayCount ? (
+                    <>
+                      <ExpandMoreIcon fontSize="inherit" />
+                      <Typography variant="caption">See More</Typography>
+                    </>
+                  ) : (
+                    <>
+                      <ExpandLessIcon fontSize="inherit" />
+                      <Typography variant="caption">See Less</Typography>
+                    </>
+                  )}
+                </IconButton>
+              </li>
+            )}
+          </ul>
+
+        </div>
+
 
       </CardContent>
-
 
       <ToastContainer />
     </Card>
