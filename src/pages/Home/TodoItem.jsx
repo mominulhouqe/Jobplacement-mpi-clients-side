@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { FaFacebook, FaTrash } from "react-icons/fa";
+import { FaEllipsisV, FaFacebook, FaTrash } from "react-icons/fa";
 import { BsPencil } from "react-icons/bs";
 import { HiFlag } from "react-icons/hi";
 import Card from "@mui/material/Card";
@@ -30,6 +30,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import "./Todos.css";
 
+import Popover from "@mui/material/Popover";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+// import { FaEllipsisV, FaTrash } from "react-icons/fa";
+
+
+
 const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(todo.text);
@@ -49,7 +57,8 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   // State for managing replies
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
-
+  const [openMenu, setOpenMenu] = useState(null);
+  
   const initialCommentDisplayCount = 2;
   const [commentDisplayCount, setCommentDisplayCount] = useState(initialCommentDisplayCount);
 
@@ -181,6 +190,8 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
+
+
 
   const handleLikeTodo = async () => {
     if (user) {
@@ -339,6 +350,62 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   useEffect(() => {
     fetchComments();
   }, [todo._id]);
+
+
+
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+
+  const handleOpenMenu = (e, commentId) => {
+    setMenuAnchorEl(e.currentTarget);
+    setOpenMenu(commentId);
+  };
+
+  const handleCloseMenus = (commentId) => {
+    setMenuAnchorEl(null);
+    setOpenMenu(null);
+  };
+
+  // Function to handle deleting a comment
+  const handleDeleteComment = async (commentId) => {
+    // Show a confirmation dialog before deleting the comment
+    const confirmation = await Swal.fire({
+      title: "Delete Comment",
+      text: "Are you sure you want to delete this comment?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (confirmation.isConfirmed) {
+      try {
+        // Send a DELETE request to your API to delete the comment.
+        await axios.delete(
+          `https://blogs-server-seven.vercel.app/api/comments/${commentId}`
+        );
+
+        // Fetch comments after deleting a comment
+        fetchComments();
+
+        Swal.fire({
+          icon: "success",
+          title: "Comment Deleted",
+          text: "The comment has been deleted successfully!",
+        });
+      } catch (error) {
+        console.error("Error deleting comment:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "An error occurred while deleting the comment.",
+        });
+      }
+    }
+  };
+
+
 
   const toggleCommentInput = () => {
     setCommentInputVisible(!commentInputVisible);
@@ -631,6 +698,42 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                       >
                         Reply
                       </Button>
+
+
+                      {/* Add the 3 dot icon */}
+                      <div className="relative inline-block text-left">
+                        <div>
+                          <button
+                            onClick={(e) => handleOpenMenu(e, comment._id)}
+                            className="flex items-center text-gray-400 hover:text-gray-600"
+                          >
+                            <FaEllipsisV />
+                          </button>
+                        </div>
+                        <Popover
+                          open={openMenu === comment._id}
+                          anchorEl={menuAnchorEl}
+                          onClose={() => handleCloseMenus(comment._id)}
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "right",
+                          }}
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "right",
+                          }}
+                        >
+                          <List component="nav" aria-label="comment menu">
+                            <ListItem button onClick={() => handleDeleteComment(comment._id)}>
+                              <FaTrash className="mr-2 text-red-500" />
+                              <ListItemText primary="Delete" />
+                            </ListItem>
+                          </List>
+                        </Popover>
+                      </div>
+
+
+
                     </div>
                   </Paper>
                 </div>
