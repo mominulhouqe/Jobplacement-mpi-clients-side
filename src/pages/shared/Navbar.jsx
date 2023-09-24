@@ -51,7 +51,10 @@ const Navbar = () => {
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <Link to="/" style={{ textDecoration: "none", color: "#FFF" }}>
-              My Blogs
+              <svg xmlns="http://www.w3.org/2000/svg" width="200" height="40" version="1.1">
+                <text x="10" y="30" font-family="Arial" font-size="24" fill="#ffffff">MediaMingle</text>
+              </svg>
+
             </Link>
           </Typography>
           <IconButton
@@ -64,9 +67,8 @@ const Navbar = () => {
             {open ? <FaTimes /> : <FaBars />}
           </IconButton>
           <ul
-            className={`md:flex md:items-center md:pb-0 pb-12 absolute md:static bg-primary md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in ${
-              open ? "top-11 " : "top-[-490px]"
-            }`}
+            className={`md:flex md:items-center md:pb-0 pb-12 absolute md:static bg-primary md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in ${open ? "top-11 " : "top-[-490px]"
+              }`}
           >
             <li className="md:ml-4 my-2">
               <Link

@@ -455,10 +455,10 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       sx={{
         maxWidth: "100%",
       }}
-      className={`border rounded-lg mx-auto container overflow-hidden shadow-md mt-2 mb-2 ${isEditing ? "bg-gray-100" : ""
+      className={`borde bg-slate-800 rounded-lg mx-auto container overflow-hidden shadow-md mt-2 mb-2 ${isEditing ? "bg-gray-200" : ""
         }`}
     >
-      <CardContent>
+      <CardContent className="bg-base-200">
         <div className="flex justify-between mb-4">
           <div className="flex items-center">
             <Avatar
@@ -641,7 +641,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
 
         <div>
 
-          <div className="flex items-center mb-2">
+          <div className="flex items-center space-x-1 mb-1">
             <Avatar src={user?.photoURL} aria-label="user-profile" sx={{ width: 30, height: 30 }} />
             <TextareaAutosize
               rowsMin={3}
@@ -655,9 +655,9 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             </Button>
           </div>
 
-          <ul className="space-y-4 w-[97%] ml-auto">
+          <ul className="space-y-1 w-[97%] ml-auto">
             {commentsToDisplay.map((comment, index) => (
-              <li key={index} className="flex items-start space-x-2 justify-center border p-2 rounded">
+              <li key={index} className="flex  items-start  justify-center space-x-2 p-1 bg-white">
                 <Avatar src={comment.photoURL} aria-label="user-profile" sx={{ width: 30, height: 30 }} />
                 <div className="flex flex-col w-full">
                   <div className="my-1">
