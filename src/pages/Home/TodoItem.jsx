@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+/* eslint-disable no-undef */
+/* eslint-disable react/prop-types */
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { FaEllipsisV, FaFacebook, FaTrash } from "react-icons/fa";
@@ -17,15 +19,11 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../../provider/AuthProvider";
-import CircularProgress from "@mui/material/CircularProgress";
 import { FaThumbsUp } from "react-icons/fa";
 import { FaWhatsapp } from "react-icons/fa";
-import { FaComment } from "react-icons/fa";
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import "./Todos.css";
@@ -58,7 +56,9 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
   const [openMenu, setOpenMenu] = useState(null);
-  
+
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const initialCommentDisplayCount = 2;
   const [commentDisplayCount, setCommentDisplayCount] = useState(initialCommentDisplayCount);
 
@@ -230,10 +230,12 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       navigate('/login'); // Make sure 'history' is available in your component
     }
   };
+     // eslint-disable-next-line no-unused-vars
   const handleAddComment = async () => {
     if (newComment.trim() !== "") {
       try {
         // Send a POST request to your API to add the comment.
+        // eslint-disable-next-line no-unused-vars
         const response = await axios.post(
           `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/comments`,
           {
@@ -283,6 +285,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     if (replyText.trim() !== "") {
       try {
         // Send a POST request to your API to add the reply.
+           // eslint-disable-next-line no-unused-vars
         const response = await axios.post(
           `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/comments/${replyingTo}/replies`,
           {
@@ -318,6 +321,10 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     setReplyText("");
   };
 
+  const handleAddCommentClick = () => {
+    setIsExpanded(!isExpanded);
+    setNewComment(""); // Clear the input field when toggling off
+  };
 
   useEffect(() => {
     const fetchLikes = async () => {
@@ -349,6 +356,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   // Use the useEffect hook to fetch comments when todo._id changes
   useEffect(() => {
     fetchComments();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todo._id]);
 
 
@@ -359,7 +367,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     setMenuAnchorEl(e.currentTarget);
     setOpenMenu(commentId);
   };
-
+   // eslint-disable-next-line no-unused-vars
   const handleCloseMenus = (commentId) => {
     setMenuAnchorEl(null);
     setOpenMenu(null);
@@ -406,7 +414,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   };
 
 
-
+   // eslint-disable-next-line no-unused-vars
   const toggleCommentInput = () => {
     setCommentInputVisible(!commentInputVisible);
   };
@@ -436,6 +444,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     const seconds = Math.floor(timeDifference / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
+       // eslint-disable-next-line no-unused-vars
     const days = Math.floor(hours / 24);
 
     if (seconds < 60) {
@@ -642,20 +651,41 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         <div>
 
           <div className="flex items-center space-x-1 mb-1">
-            <Avatar src={user?.photoURL} aria-label="user-profile" sx={{ width: 30, height: 30 }} />
-            <TextareaAutosize
-              rowsMin={3}
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Add a comment..."
-              className="w-full ml-2 outline-none resize-none border rounded p-1"
+            <Avatar
+              src={user?.photoURL}
+              aria-label="user-profile"
+              sx={{ width: 30, height: 30 }}
             />
-            <Button onClick={handleAddComment} variant="contained" color="primary" className="ml-2 btn-sm">
-              Add
-            </Button>
+            {isExpanded ? (
+              <div className="w-full">
+                <TextareaAutosize
+                  rowsMin={3}
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Add a comment..."
+                  className="w-full outline-none resize-none border rounded p-1 h-20"
+                />
+                <Button
+                  onClick={handleAddCommentClick}
+                  variant="contained"
+                  color="primary"
+                  className="ml-2 btn-sm"
+                >
+                  Add
+                </Button>
+              </div>
+            ) : (
+              <input
+                onClick={handleAddCommentClick}
+                className="text-blue-500 cursor-pointer "
+             
+                {...newComment || "Add a Comment"} 
+                />
+            )}
           </div>
 
-          <ul className="space-y-1 w-[97%] ml-auto">
+
+          <ul className="space-y-1 w-[96%] ml-auto">
             {commentsToDisplay.map((comment, index) => (
               <li key={index} className="flex  items-start  justify-center space-x-2 p-1 bg-white">
                 <Avatar src={comment.photoURL} aria-label="user-profile" sx={{ width: 30, height: 30 }} />
