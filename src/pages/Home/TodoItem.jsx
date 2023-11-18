@@ -548,7 +548,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             </Typography>
 
             {todo.images && (
-              <div className="container mx-auto grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 my-2">
+              <div className="container image-grid my-2">
                 {/* Mapping through images to display them */}
                 {showAllImages
                   ? todo.images.map((image, index) => (
@@ -556,7 +556,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                       key={index}
                       src={image}
                       alt={`Image ${index}`}
-                      className="rounded-lg cursor-pointer bg-slate-950"
+                      className="rounded-lg cursor-pointer image  bg-slate-950"
                       onClick={() => openFullscreenImage(image)}
                     />
                   ))
