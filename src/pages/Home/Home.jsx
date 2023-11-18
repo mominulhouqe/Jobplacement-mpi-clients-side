@@ -48,7 +48,9 @@ const Home = () => {
 
 
 
-      <div className="hidden md:block w-full md:w-1/3 mt-4 md:mt-0">Coming Soon</div>
+      <div className="hidden md:block w-full md:w-1/3 mt-4 md:mt-0">
+      upcomming
+      </div>
     </div>
   );
 };

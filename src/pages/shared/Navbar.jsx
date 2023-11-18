@@ -71,10 +71,10 @@ const Navbar = () => {
           >
             <li className="md:ml-4 my-2">
               <Link
-                to="/about"
+                to="/forms"
                 className="text-white px-2 py-1 rounded-lg duration-500"
               >
-                ABOUT ME
+                FORMS
               </Link>
             </li>
             <li className="md:ml-4 my-2">
