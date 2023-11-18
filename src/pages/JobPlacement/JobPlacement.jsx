@@ -18,8 +18,8 @@ const JobPlacement = () => {
   const jobSectors = ['Web Development', 'Graphic Design'];
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="m-4 my-16 mx-auto container lg:w-2/4 w-full p-4">
-      <h1 className='my-6 font-serif font-semibold text-2xl'>Job Placement Infomation MBPI </h1>
+    <form onSubmit={handleSubmit(onSubmit)} className="m-4 h-screen my-16 mx-auto container lg:w-2/4 w-full p-4">
+      <h1 className='my-2 font-serif font-semibold text-3xl'>Job Placement Infomation MBPI </h1>
       <TextField
 
         label="Name"
@@ -53,7 +53,6 @@ const JobPlacement = () => {
         <span className="text-red-500">Gender is required</span>
       )}
 
-      {/* Add other input fields similarly */}
       
       <TextField
         label="Mobile Number"
@@ -74,8 +73,6 @@ const JobPlacement = () => {
       />
       {errors.session && <span className="text-red-500">Session is required</span>}
 
-      {/* Add other input fields similarly */}
-      
       <TextField
         label="Location of the Company"
         {...register('companyLocation', { required: true })}
