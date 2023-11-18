@@ -3,7 +3,7 @@
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { FaEllipsisV, FaFacebook, FaTrash } from "react-icons/fa";
+import { FaComment, FaEllipsisV, FaFacebook, FaTrash } from "react-icons/fa";
 import { BsPencil } from "react-icons/bs";
 import { HiFlag } from "react-icons/hi";
 import Card from "@mui/material/Card";
@@ -98,17 +98,20 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
           completed: todo.completed,
         }
       );
-
+  
       onUpdate(todo._id, text);
-
+  
       toast.success("post updated successfully!", {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
       });
+  
+      // Set isEditing to false after successfully updating the todo
+      setIsEditing(false);
     } catch (error) {
       console.error("Error updating post:", error);
       Swal.fire({
@@ -118,6 +121,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       });
     }
   };
+  
 
   const handleDeleteTodo = async () => {
     try {
@@ -321,10 +325,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     setReplyText("");
   };
 
-  const handleAddCommentClick = () => {
-    setIsExpanded(!isExpanded);
-    setNewComment(""); // Clear the input field when toggling off
-  };
 
   useEffect(() => {
     const fetchLikes = async () => {
@@ -492,11 +492,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                 <MoreVertIcon />
               </IconButton>
             )}
-            {!isOwner && (
-              <IconButton onClick={handleReportTodo}>
-                {/* <HiFlag /> */}
-              </IconButton>
-            )}
+            
           </CardActions>
         </div>
 
@@ -516,6 +512,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                 Save
               </button>
             </div>
+
           </>
         ) : (
           <>
@@ -551,7 +548,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             </Typography>
 
             {todo.images && (
-              <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="container mx-auto grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 my-2">
                 {/* Mapping through images to display them */}
                 {showAllImages
                   ? todo.images.map((image, index) => (
@@ -657,34 +654,29 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             <Avatar
               src={user?.photoURL}
               aria-label="user-profile"
-              sx={{ width: 30, height: 30 , border:1}}
+              sx={{ width: 30, height: 30, border: 1 }}
             />
-            {isExpanded ? (
-              <div className="w-full">
-                <TextareaAutosize
-                  rowsMin={3}
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Add a comment..."
-                  className="w-full outline-none resize-none border rounded p-1 h-20"
-                />
+
+            <div className="w-full flex space-x-2">
+              <TextareaAutosize
+                rowsMin={3}
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Write comment..."
+                className="w-full outline-none resize-none border rounded p-1 h-20"
+              />
+              <div>
                 <Button
                   onClick={handleAddComment}
                   variant="contained"
                   color="primary"
-                  className="ml-2 btn-sm"
+                  className="ml-2 btn-xs"
                 >
-                  Add
+                  <FaComment />
                 </Button>
               </div>
-            ) : (
-              <input
-                onClick={handleAddCommentClick}
-                className="text-blue-500 cursor-pointer "
+            </div>
 
-                {...newComment || "Add a Comment"}
-              />
-            )}
           </div>
 
 
@@ -705,7 +697,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
 
                       {replyingTo === comment._id && (
                         <Paper elevation={3} className="p-2 rounded-lg mt-2">
-                          <div className="flex items-center">
+                          <div className="flex justify-center items-center mb-4">
                             <Avatar src={user?.photoURL} aria-label="user-profile" sx={{ width: 40, height: 40 }} />
                             <TextareaAutosize
                               rowsMin={3}
@@ -715,10 +707,10 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                               className="w-full ml-2 outline-none resize-none"
                             />
                           </div>
-                          <Button onClick={handleAddReply} variant="contained" color="primary" className="mt-2">
-                            Add Reply
+                          <Button onClick={handleAddReply} variant="contained" color="primary" className="mt-2 ml-2 btn-xs">
+                            Reply
                           </Button>
-                          <Button onClick={cancelReply} variant="outlined" color="secondary" className="mt-2 ml-2">
+                          <Button onClick={cancelReply} variant="outlined" color="secondary" className="mt-2 ml-2 btn-xs">
                             Cancel
                           </Button>
                         </Paper>
