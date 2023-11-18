@@ -230,7 +230,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       navigate('/login'); // Make sure 'history' is available in your component
     }
   };
-     // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   const handleAddComment = async () => {
     if (newComment.trim() !== "") {
       try {
@@ -285,7 +285,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     if (replyText.trim() !== "") {
       try {
         // Send a POST request to your API to add the reply.
-           // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
         const response = await axios.post(
           `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/comments/${replyingTo}/replies`,
           {
@@ -356,7 +356,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   // Use the useEffect hook to fetch comments when todo._id changes
   useEffect(() => {
     fetchComments();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todo._id]);
 
 
@@ -367,7 +367,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     setMenuAnchorEl(e.currentTarget);
     setOpenMenu(commentId);
   };
-   // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   const handleCloseMenus = (commentId) => {
     setMenuAnchorEl(null);
     setOpenMenu(null);
@@ -414,7 +414,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   };
 
 
-   // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   const toggleCommentInput = () => {
     setCommentInputVisible(!commentInputVisible);
   };
@@ -444,7 +444,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     const seconds = Math.floor(timeDifference / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
-       // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     const days = Math.floor(hours / 24);
 
     if (seconds < 60) {
@@ -551,14 +551,15 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             </Typography>
 
             {todo.images && (
-              <div className="mt-2 flex flex-wrap justify-center items-center">
+              <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Mapping through images to display them */}
                 {showAllImages
                   ? todo.images.map((image, index) => (
                     <img
                       key={index}
                       src={image}
                       alt={`Image ${index}`}
-                      className="w-96 h-auto rounded-lg cursor-pointer"
+                      className="rounded-lg cursor-pointer bg-slate-950"
                       onClick={() => openFullscreenImage(image)}
                     />
                   ))
@@ -567,10 +568,11 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                       key={index}
                       src={image}
                       alt={`Image ${index}`}
-                      className="w-96 h-auto rounded-lg cursor-pointer"
+                      className="rounded-lg bg-slate-950 cursor-pointer"
                       onClick={() => openFullscreenImage(image)}
                     />
                   ))}
+                {/* Show a button to view more images if there are more than 3 */}
                 {todo.images.length > 3 && !showAllImages && (
                   <button
                     className="text-blue-500 mt-2"
@@ -604,27 +606,28 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
               )}
             </Menu>
 
-            {/* Fullscreen Image Modal */}
-            {fullscreenImage && (
+            {/* {fullscreenImage && (
               <div
-                className={`modal-overlay ${fullscreenImage ? 'active' : ''}`}
+                className={`modal-overlay fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-75 ${fullscreenImage ? 'active' : ''}`}
                 onClick={closeFullscreenImage}
               >
-                <div className={`modal-container ${fullscreenImage ? 'active' : ''}`}>
+                <div className={`modal-container max-w-3xl max-h-full overflow-hidden rounded-lg ${fullscreenImage ? 'active' : ''}`}>
                   <button
-                    className="text-white btn-sm btn-circle bg-red-600 absolute top-2 right-2 text-xl cursor-pointer"
+                    className=" text-white btn-sm btn-circle bg-red-600 absolute top-2 right-2 text-xl cursor-pointer"
                     onClick={closeFullscreenImage}
                   >
                     &times;
                   </button>
+          
                   <img
                     src={fullscreenImage}
                     alt="Fullscreen"
-                    className="max-w-full max-h-full "
+                  className="w-full h-full object-contain"
                   />
                 </div>
               </div>
-            )}
+            )} */}
+
           </>
         )}
 
@@ -654,7 +657,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             <Avatar
               src={user?.photoURL}
               aria-label="user-profile"
-              sx={{ width: 30, height: 30 }}
+              sx={{ width: 30, height: 30 , border:1}}
             />
             {isExpanded ? (
               <div className="w-full">
@@ -666,7 +669,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                   className="w-full outline-none resize-none border rounded p-1 h-20"
                 />
                 <Button
-                  onClick={handleAddCommentClick}
+                  onClick={handleAddComment}
                   variant="contained"
                   color="primary"
                   className="ml-2 btn-sm"
@@ -678,9 +681,9 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
               <input
                 onClick={handleAddCommentClick}
                 className="text-blue-500 cursor-pointer "
-             
-                {...newComment || "Add a Comment"} 
-                />
+
+                {...newComment || "Add a Comment"}
+              />
             )}
           </div>
 
