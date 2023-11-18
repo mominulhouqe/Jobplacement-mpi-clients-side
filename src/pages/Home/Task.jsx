@@ -59,7 +59,7 @@ const Task = () => {
       const newTodo = {
         text,
         photoURL: user.photoURL,
-        images: imgURLs, // Store the image URLs as an array
+        images: imgURLs, 
         userName: user.displayName,
         email: user.email,
         timestamp: new Date().toISOString(),

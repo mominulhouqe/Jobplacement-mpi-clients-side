@@ -2,6 +2,9 @@
 import { useForm } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
+import { useContext, useState } from 'react';
+import { AuthContext } from '../../provider/AuthProvider';
+import axios from "axios";
 
 const JobPlacement = () => {
   const {
@@ -10,15 +13,51 @@ const JobPlacement = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    // Handle form submission here
-    console.log(data);
+  const [successMessage, setSuccessMessage] = useState('');
+  const { user } = useContext(AuthContext);
+
+  const onSubmit = async (data, e) => {
+
+    try {
+      const newFormData = {
+
+        name: data.name,
+        email: data.email,
+        gender: data.gender,
+        mobileNumber: data.mobileNumber,
+        session: data.session,
+        roll:data.roll,
+        compnayName:data.companyName, 
+        companyLocation: data.companyLocation,
+        designation: data.designation,
+        jobSector: data.jobSector,
+        photoURL: user.photoURL,
+        userName: user.displayName,
+        loginEmail: user.email,
+        timestamp: new Date().toISOString(),
+        userId: user.uid,
+      };
+
+     
+      const apiResponse = await axios.post(
+        'https://blogs-server-seven.vercel.app/api/forms', 
+        newFormData
+      );
+
+      console.log('Submit successfully:', apiResponse.data);
+
+      setSuccessMessage('Submitted successfully!');
+      e.target.reset();
+    } catch (error) {
+    
+      console.error('Error submitting form:', error);
+    }
   };
 
   const jobSectors = ['Web Development', 'Graphic Design'];
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="m-4 h-screen my-16 mx-auto container lg:w-2/4 w-full p-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="m-4  my-16 mx-auto container lg:w-2/4 w-full p-4">
       <h1 className='my-2 font-serif font-semibold text-3xl'>Job Placement Infomation MBPI </h1>
       <TextField
 
@@ -53,7 +92,7 @@ const JobPlacement = () => {
         <span className="text-red-500">Gender is required</span>
       )}
 
-      
+
       <TextField
         label="Mobile Number"
         type="tel"
@@ -72,6 +111,21 @@ const JobPlacement = () => {
         margin="normal"
       />
       {errors.session && <span className="text-red-500">Session is required</span>}
+     
+      <TextField
+        label="Roll"
+        {...register('roll', { required: true })}
+        fullWidth
+        margin="normal"
+      />
+      {errors.Roll && <span className="text-red-500">Roll is required</span>}
+      <TextField
+        label="companyName"
+        {...register('companyName', { required: true })}
+        fullWidth
+        margin="normal"
+      />
+      {errors.companyName && <span className="text-red-500">Company Name is required</span>}
 
       <TextField
         label="Location of the Company"
@@ -89,7 +143,7 @@ const JobPlacement = () => {
         fullWidth
         margin="normal"
       />
-     
+
 
       <TextField
         select
@@ -114,6 +168,9 @@ const JobPlacement = () => {
       >
         Submit
       </button>
+      {successMessage && (
+        <p className="text-green-500 mt-2">{successMessage}</p>
+      )}
     </form>
   );
 };
