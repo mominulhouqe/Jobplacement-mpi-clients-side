@@ -44,7 +44,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [showMoreText, setShowMoreText] = useState(false);
 
   const [showAllImages, setShowAllImages] = useState(false);
-  const [fullscreenImage, setFullscreenImage] = useState(null);
+  // const [fullscreenImage, setFullscreenImage] = useState(null);
   const [reporting, setReporting] = useState(false);
 
   const [comments, setComments] = useState([]);
@@ -57,7 +57,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [replyText, setReplyText] = useState("");
   const [openMenu, setOpenMenu] = useState(null);
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  // const [isExpanded, setIsExpanded] = useState(false);
 
   const initialCommentDisplayCount = 2;
   const [commentDisplayCount, setCommentDisplayCount] = useState(initialCommentDisplayCount);
@@ -76,9 +76,9 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     setFullscreenImage(image);
   };
 
-  const closeFullscreenImage = () => {
-    setFullscreenImage(null);
-  };
+  // const closeFullscreenImage = () => {
+  //   setFullscreenImage(null);
+  // };
 
   const toggleShowMoreText = () => {
     setShowMoreText(!showMoreText);
