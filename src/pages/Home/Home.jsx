@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { useState } from "react";
+import DisplayData from "../JobPlacement/DisplayData";
 
 const Home = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -50,6 +51,7 @@ const Home = () => {
 
       <div className="hidden md:block w-full md:w-1/3 mt-4 md:mt-0">
       upcomming
+      <DisplayData />
       </div>
     </div>
   );
