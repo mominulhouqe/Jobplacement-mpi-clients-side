@@ -69,9 +69,9 @@ const DisplayData = () => {
                 ))}
             </ul>
             {visibleItems < formData.length && (
-                <Link to='/info-details' onClick={loadMoreItems} className=" text-white btn btn-primary">
+                <Button  onClick={loadMoreItems} className=" btn btn-primary">
                     Next
-                </Link>
+                </Button>
             )}
 
             <Dialog open={isModalOpen} onClose={closeModal} className="max-w-md mx-auto">
