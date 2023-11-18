@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import  { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -20,7 +20,6 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const { user, logOut } = useContext(AuthContext);
-  const location = useLocation();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -51,8 +50,8 @@ const Navbar = () => {
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <Link to="/" style={{ textDecoration: "none", color: "#FFF" }}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="200" height="40" version="1.1">
-                <text x="10" y="30" font-family="Arial" font-size="24" fill="#ffffff">MediaMingle</text>
+              <svg xmlns="http://www.w3.org/2000/svg" width="auto" height="40" version="1.1">
+                <text x="10" y="30" fontFamily="Arial" fontSize="24" fill="#ffffff">JobPlacement ~ MBPI</text>
               </svg>
 
             </Link>
