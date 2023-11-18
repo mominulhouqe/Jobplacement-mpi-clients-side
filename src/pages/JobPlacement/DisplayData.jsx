@@ -1,12 +1,12 @@
 import  { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaExclamation, } from 'react-icons/fa';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Link } from '@mui/material';
 const DisplayData = () => {
     const [formData, setFormData] = useState([]);
     const [isModalOpen, setModalOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
-
+    const [visibleItems, setVisibleItems] = useState(10); 
     useEffect(() => {
         fetchData();
     }, []);
@@ -30,13 +30,15 @@ const DisplayData = () => {
     const closeModal = () => {
         setModalOpen(false);
     };
-
+    const loadMoreItems = () => {
+        setVisibleItems((prev) => prev + 10); // Increase the number of visible items by 10
+    };
 
     return (
         <div className="m-4">
             <h2 className="text-2xl font-semibold mb-4">Submitted Data</h2>
             <ul className="space-y-4">
-                {formData.map((dataItem) => (
+            {formData.slice(0, visibleItems).map((dataItem) => (
                     <li
                         key={dataItem._id}
                         className="bg-white shadow-md p-4 rounded-md transition-transform transform hover:scale-105 duration-300 ease-in-out"
@@ -66,6 +68,11 @@ const DisplayData = () => {
                     </li>
                 ))}
             </ul>
+            {visibleItems < formData.length && (
+                <Link to='/info-details' onClick={loadMoreItems} className=" text-white btn btn-primary">
+                    Next
+                </Link>
+            )}
 
             <Dialog open={isModalOpen} onClose={closeModal} className="max-w-md mx-auto">
                 <div className="bg-white rounded-lg p-6">

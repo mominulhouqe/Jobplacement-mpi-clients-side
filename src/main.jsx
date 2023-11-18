@@ -9,6 +9,7 @@ import Register from "./pages/shared/Register.jsx";
 import Main from "./Layout/Main.jsx";
 import ErrorPage from "./pages/Error/ErrorPage.jsx";
 import JobPlacement from "./pages/JobPlacement/JobPlacement.jsx";
+import DisplayData from "./pages/JobPlacement/DisplayData.jsx";
 
 // const router = createBrowserRouter([
 //   {
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: '/forms',
         element: <JobPlacement />
+      },
+      {
+        path: '/info-details',
+        element: <DisplayData />
       },
       {
         path: '/login',
