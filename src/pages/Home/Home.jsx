@@ -30,12 +30,12 @@ const Home = () => {
           <MenuIcon />
         </IconButton>
         <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer}>
-          <div onClick={toggleDrawer} onKeyDown={toggleDrawer}>
+          <div >
             <List>
               <ListItem button>
                 {/* <ListItemText primary="Coming Soon" /> */}
-                <div className="w-72">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eum aliquid consequatur sapiente impedit corporis excepturi voluptate explicabo. Vitae aliquid, corporis provident ab, exercitationem omnis fugit iste sint quibusdam voluptatem perspiciatis!
+                <div className="">
+                <DisplayData />
                 </div>
               </ListItem>
             </List>
@@ -47,10 +47,7 @@ const Home = () => {
         <TodoList />
       </div>
 
-
-
       <div className="hidden md:block w-full md:w-1/3 mt-4 md:mt-0">
-      upcomming
       <DisplayData />
       </div>
     </div>

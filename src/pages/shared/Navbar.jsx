@@ -44,12 +44,16 @@ const Navbar = () => {
     handleProfileClose(); // Close the dropdown menu after navigation
   };
 
+  const handleItemClick = () => {
+    setOpen(false);
+  };
+
   return (
     <div>
       <AppBar position="fixed" color="primary">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link to="/" style={{ textDecoration: "none", color: "#FFF" }}>
+            <Link to="/"  onClick={handleItemClick} style={{ textDecoration: "none", color: "#FFF" }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="auto" height="40" version="1.1">
                 <text x="10" y="30" fontFamily="Arial" fontSize="24" fill="#ffffff">JobPlacement ~ MBPI</text>
               </svg>
@@ -73,7 +77,7 @@ const Navbar = () => {
               <Link
                 to="/forms"
                 className="text-white px-2 py-1 rounded-lg duration-500"
-              >
+                onClick={handleItemClick} >
                 FORMS
               </Link>
             </li>
@@ -81,7 +85,7 @@ const Navbar = () => {
               <Link
                 to="/services"
                 className="text-white px-2 py-1 rounded-lg duration-500"
-              >
+                onClick={handleItemClick} >
                 SERVICES
               </Link>
             </li>
@@ -89,7 +93,7 @@ const Navbar = () => {
               <Link
                 to="/contact"
                 className="text-white px-2 py-1 rounded-lg duration-500"
-              >
+                onClick={handleItemClick}>
                 CONTACT
               </Link>
             </li>

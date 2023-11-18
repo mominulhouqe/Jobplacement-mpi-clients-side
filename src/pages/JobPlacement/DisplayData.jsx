@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaExclamation, } from 'react-icons/fa';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
@@ -42,7 +42,7 @@ const DisplayData = () => {
                         className="bg-white shadow-md p-4 rounded-md transition-transform transform hover:scale-105 duration-300 ease-in-out"
                     >
                         <div className='flex justify-end cursor-pointer ' onClick={() => openModal(dataItem)}>
-                            <FaExclamation />
+                            <FaExclamation className='text-red-500 ' />
                         </div>
 
                         <div className="flex items-center justify-between mb-2">
