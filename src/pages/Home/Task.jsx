@@ -1,6 +1,6 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
-import TodoList from "./TodoList";
+
 import { AuthContext } from "../../provider/AuthProvider";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -14,7 +14,7 @@ import Typography from "@mui/material/Typography";
 
 const img_hosting_token = import.meta.env.VITE_Image_Upload_token;
 
-const Task = ({ addTodo }) => {
+const Task = () => {
   const [text, setText] = useState("");
   const [files, setFiles] = useState([]); // State to store the selected files
   const [successMessage, setSuccessMessage] = useState(""); // State to manage success message
@@ -74,10 +74,10 @@ const Task = ({ addTodo }) => {
       );
 
       // Handle a successful API response if needed
-      console.log("Todo added successfully:", apiResponse.data);
+      console.log("Post successfully:", apiResponse.data);
 
       // Update the success message
-      setSuccessMessage("Todo added successfully!");
+      setSuccessMessage("Post successfully!");
 
       // Clear the success message after a few seconds (e.g., 3 seconds)
       setTimeout(() => {
