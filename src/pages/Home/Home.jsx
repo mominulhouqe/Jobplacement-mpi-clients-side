@@ -4,7 +4,6 @@ import {
   Drawer,
   List,
   ListItem,
-  ListItemText,
   IconButton,
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
@@ -33,20 +32,23 @@ const Home = () => {
           <div onClick={toggleDrawer} onKeyDown={toggleDrawer}>
             <List>
               <ListItem button>
-                <ListItemText primary="Coming Soon" />
+                {/* <ListItemText primary="Coming Soon" /> */}
+                <div className="w-72">
+                  Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eum aliquid consequatur sapiente impedit corporis excepturi voluptate explicabo. Vitae aliquid, corporis provident ab, exercitationem omnis fugit iste sint quibusdam voluptatem perspiciatis!
+                </div>
               </ListItem>
             </List>
           </div>
         </Drawer>
       </div>
 
-      <div className="container w-full md:w-3/4 mx-auto mt-8 md:mr-4">
+      <div className="container w-full md:w-3/5 mx-auto mt-8 md:mr-4">
         <TodoList />
       </div>
 
 
 
-      <div className="hidden md:block w-full md:w-1/4 mt-4 md:mt-0">Coming Soon</div>
+      <div className="hidden md:block w-full md:w-1/3 mt-4 md:mt-0">Coming Soon</div>
     </div>
   );
 };

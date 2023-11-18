@@ -98,9 +98,9 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
           completed: todo.completed,
         }
       );
-  
+
       onUpdate(todo._id, text);
-  
+
       toast.success("post updated successfully!", {
         position: "top-right",
         autoClose: 1000,
@@ -109,7 +109,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         pauseOnHover: true,
         draggable: true,
       });
-  
+
       // Set isEditing to false after successfully updating the todo
       setIsEditing(false);
     } catch (error) {
@@ -121,7 +121,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       });
     }
   };
-  
+
 
   const handleDeleteTodo = async () => {
     try {
@@ -492,7 +492,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                 <MoreVertIcon />
               </IconButton>
             )}
-            
+
           </CardActions>
         </div>
 
@@ -524,7 +524,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             >
               {showMoreText || todo.text.split(" ").length <= 50 ? (
                 <>
-                  {todo.text}
+                  <p className="flex items-center ml-4 mb-2 font-semibold font-serif ">{todo.text}</p>
                   {todo.text.split(" ").length > 50 && (
                     <button
                       className="text-blue-500 ml-1"
@@ -627,15 +627,15 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
 
           </>
         )}
-
+        <div className="border"></div>
         <div className="flex items-center justify-between mb-4">
           <div className="mr-4 flex justify-center items-center">
             <IconButton onClick={handleLikeTodo}>
               <FaThumbsUp
-                className={`text-blue-500 text-3xl ${isLikedByUser ? 'text-red-500' : ''}`}
+                className={`text-blue-500 ml-3 text-xl ${isLikedByUser ? 'text-red-500' : ''}`}
               />
             </IconButton>
-            <span className="ml-1 text-green-700 text-xl font-medium"> {likeCount} </span>
+            <span className="ml-1 text-green-700"> {likeCount} </span>
           </div>
 
           <div className="flex items-center">
@@ -647,7 +647,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             </IconButton>
           </div>
         </div>
-
+        <div className="border mb-2"></div>
         <div>
 
           <div className="flex items-center space-x-1 mb-1">
