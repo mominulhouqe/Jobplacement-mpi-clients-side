@@ -15,6 +15,7 @@ import {
 import { FaSignOutAlt, FaBars, FaTimes, FaUser } from "react-icons/fa";
 import { AuthContext } from "../../provider/AuthProvider";
 import "./Navbar.css";
+import logo from '../../assets/download.jpg'
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -53,9 +54,10 @@ const Navbar = () => {
       <AppBar position="fixed" color="primary">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link to="/"  onClick={handleItemClick} style={{ textDecoration: "none", color: "#FFF" }}>
+            <Link to="/"  onClick={handleItemClick} style={{ textDecoration: "none", color: "#FFF" }} className="flex justify-center items-center">
+            <img src={logo} alt="" className="w-10 border rounded-full"/>
               <svg xmlns="http://www.w3.org/2000/svg" width="auto" height="40" version="1.1">
-                <text x="10" y="30" fontFamily="Arial" fontSize="24" fill="#ffffff">JobPlacement ~ MBPI</text>
+                <text x="10" y="30" fontFamily="Arial" fontSize="24" fill="#ffffff">  JobPlacement ~ MBPI</text>
               </svg>
 
             </Link>

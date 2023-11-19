@@ -482,7 +482,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
               </Typography>
             </div>
           </div>
-          <CardActions disableSpacing>
+          <CardActions>
             {!isEditing && (
               <IconButton
                 onClick={handleMenuClick}
