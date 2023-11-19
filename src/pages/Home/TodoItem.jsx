@@ -524,7 +524,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             >
               {showMoreText || todo.text.split(" ").length <= 50 ? (
                 <>
-                  <p className="flex items-center ml-4 mb-2 font-semibold font-serif ">{todo.text}</p>
+                  <div className="ml-4 mb-2 font-semibold font-serif ">{todo.text}</div>
                   {todo.text.split(" ").length > 50 && (
                     <button
                       className="text-blue-500 ml-1"

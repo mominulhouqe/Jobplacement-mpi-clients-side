@@ -93,11 +93,11 @@ const Task = () => {
     
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleAddTodo();
-    }
-  };
+  // const handleKeyPress = (e) => {
+  //   if (e.key === "Enter") {
+  //     handleAddTodo();
+  //   }
+  // };
 
   const handleFileChange = (e) => {
     const selectedFiles = e.target.files;
@@ -124,7 +124,7 @@ const Task = () => {
                 variant="outlined"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                onKeyPress={handleKeyPress}
+             
               />
       
           </Grid>

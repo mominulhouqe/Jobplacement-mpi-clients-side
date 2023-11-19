@@ -11,28 +11,8 @@ import ErrorPage from "./pages/Error/ErrorPage.jsx";
 import JobPlacement from "./pages/JobPlacement/JobPlacement.jsx";
 import DisplayData from "./pages/JobPlacement/DisplayData.jsx";
 import Gallary from "./pages/Gallary/Gallary.jsx";
+import UserInfo from "./pages/Users/UserInfo.jsx";
 
-// const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <Main />,
-//     errorElement: <ErrorPage />,
-//     children: [
-//       {
-//         path: "/",
-//         element: <Home />,
-//       },
-//       {
-//         path: "login",
-//         element: <LoginForm />,
-//       },
-//       {
-//         path: "register",
-//         element: <Register />,
-//       },
-//     ],
-//   },
-// ]);
 
 const router = createBrowserRouter([
   {
@@ -43,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home />
+      },
+      {
+        path: '/userprofile',
+        element: <UserInfo />
       },
       {
         path: '/forms',

@@ -180,8 +180,6 @@ const JobPlacement = () => {
       >
         {user ? 'Submit' : 'Please log in to submit'}
       </button>
-
-
     </form>
   );
 };
