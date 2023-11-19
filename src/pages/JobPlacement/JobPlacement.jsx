@@ -7,6 +7,7 @@ import { AuthContext } from '../../provider/AuthProvider';
 import axios from "axios";
 import Swal from 'sweetalert2';
 
+
 const JobPlacement = () => {
   const {
     register,
@@ -61,7 +62,7 @@ const JobPlacement = () => {
     }
   };
 
-  const jobSectors = ['Web Development', 'Graphic Design'];
+  const jobSectors = ['Web Development', 'Graphic Design', 'Digital Marketing', 'Networking', 'Software Engineer', 'Electionics', 'RAC', 'Food'];
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="m-4  my-16 mx-auto container lg:w-2/4 w-full p-4">
@@ -172,8 +173,8 @@ const JobPlacement = () => {
       <button
         type="submit"
         className={`px-6 py-3 mt-4 rounded-md ${!user
-            ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-            : 'bg-blue-500 text-white hover:bg-blue-600'
+          ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+          : 'bg-blue-500 text-white hover:bg-blue-600'
           } transition-all duration-300`}
         disabled={!user}
       >

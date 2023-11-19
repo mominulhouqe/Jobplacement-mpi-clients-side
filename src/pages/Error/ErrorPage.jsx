@@ -12,8 +12,8 @@ const ErrorPage = () => {
             <span>Error</span> {status || 404}
           </h2>
           <p className='text-red-500 my-10 font-bold'>{error?.message}</p>
-          <img src="https://p.xuv.be/wp-content/uploads/2016/12/screenshot-github.com-2016-12-08-14-17-45.png"
-           className='error-image w-full max-w-sm mx-auto' alt="Error 404" />
+          <img  src="https://p.xuv.be/wp-content/uploads/2016/12/screenshot-github.com-2016-12-08-14-17-45.png"
+           className='error-image w-full mx-auto' alt="Error 404" />
 
           <Link to='/' className='btn btn-primary my-10'>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
