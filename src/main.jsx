@@ -10,6 +10,7 @@ import Main from "./Layout/Main.jsx";
 import ErrorPage from "./pages/Error/ErrorPage.jsx";
 import JobPlacement from "./pages/JobPlacement/JobPlacement.jsx";
 import DisplayData from "./pages/JobPlacement/DisplayData.jsx";
+import Gallary from "./pages/Gallary/Gallary.jsx";
 
 // const router = createBrowserRouter([
 //   {
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: '/info-details',
         element: <DisplayData />
+      },
+      {
+        path: '/gallary',
+        element: <Gallary />
       },
       {
         path: '/login',

@@ -83,10 +83,10 @@ const Navbar = () => {
             </li>
             <li className="md:ml-4 my-2">
               <Link
-                to="/services"
+                to="/gallary"
                 className="text-white px-2 py-1 rounded-lg duration-500"
                 onClick={handleItemClick} >
-                SERVICES
+                Gallary
               </Link>
             </li>
             <li className="md:ml-4 my-2">

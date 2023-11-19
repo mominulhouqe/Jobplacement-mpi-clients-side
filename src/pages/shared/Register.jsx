@@ -53,7 +53,7 @@ const Register = () => {
 
     if (selectedFile) {
       try {
-        const img_hosting_token = import.meta.env.VITE_Image_Upload_token;
+        const img_hosting_token = import.meta.env.VITE_Image_Upload_tokens;
         const formData = new FormData();
         formData.append("image", selectedFile);
 

@@ -12,7 +12,7 @@ import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
-const img_hosting_token = import.meta.env.VITE_Image_Upload_token;
+const img_hosting_token = import.meta.env.VITE_Image_Upload_tokens;
 
 const Task = () => {
   const [text, setText] = useState("");
