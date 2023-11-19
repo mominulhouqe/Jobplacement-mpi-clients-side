@@ -20,7 +20,7 @@ const TodoList = () => {
         setError("Error: Data received is not an array");
       }
     } catch (error) {
-      setError(`Error fetching Todos: ${error.message}`);
+      setError(`Error fetching : ${error.message}`);
     }
   };
 

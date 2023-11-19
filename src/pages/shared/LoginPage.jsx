@@ -16,6 +16,7 @@ import {
 import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import { AuthContext } from "../../provider/AuthProvider";
 import "./LoginForm.css";
+import Swal from "sweetalert2";
 
 const TransitionUp = (props) => {
   return <Slide {...props} direction="up" />;
@@ -23,7 +24,7 @@ const TransitionUp = (props) => {
 
 const LoginPage = () => {
   const { signIn, signInGoogle } = useContext(AuthContext);
-  const [user, setUser] = useState(null);
+
   const [passwordVisible, setPasswordVisible] = useState(false);
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -40,18 +41,23 @@ const LoginPage = () => {
     const email = form.email.value;
     const password = form.password.value;
 
-    if (!/(?=.*[a-z])/.test(password)) {
-      // Password validation failed
-      return;
-    }
-
     try {
       await signIn(email, password);
+      Swal.fire({
+        icon: 'success',
+        title: 'Login successful!',
+        showConfirmButton: false,
+        timer: 2000,
+      });
       setShowSuccessMessage(true);
-      form.reset("");
+      form.reset();
       navigate(from, { replace: true });
     } catch (error) {
-      // Handle login error
+      Swal.fire({
+        icon: 'error',
+        title: 'Login failed',
+        text: 'Please check your credentials.',
+      });
     }
   };
 
@@ -62,6 +68,7 @@ const LoginPage = () => {
       navigate(from, { replace: true });
     } catch (error) {
       // Handle login error
+      console.error("Google login error:", error);
     }
   };
 
@@ -75,11 +82,10 @@ const LoginPage = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        backgroundImage: `url("your-background-image-url.jpg")`, // Replace with your image URL
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
-        minHeight: "100vh", // Make sure the login form takes up the full height of the viewport
+        minHeight: "100vh",
       }}
     >
       <Container component="main" maxWidth="xs" className="my-16 mt-24">
