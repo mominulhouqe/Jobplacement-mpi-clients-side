@@ -56,19 +56,19 @@ const DisplayData = () => {
                         </div>
 
                         <div className="flex items-center justify-between mb-2">
-                            <FaUser className="mr-2" />
-                            <span className="font-bold">Name:</span> {dataItem.name}
+                            
+                            <span className="font-bold flex items-center"><FaUser className="mr-2" /> Name:</span> {dataItem.name}
                         </div>
                         <div className="flex items-center justify-between mb-2">
-                         <FaRegAddressCard className="mr-2" />
+                         
                             
-                            <span className="font-bold">Email:</span> {dataItem.email}
+                            <span className="font-bold flex justify-center items-center"><FaRegAddressCard className="mr-2" /> Email:</span> {dataItem.email}
                         </div>
 
                         {dataItem.photoURL && (
                             <div className="flex items-center justify-between mb-2">
-                                <FaBriefcase className="mr-2" />
-                                <span className="font-bold">Designation:</span> {dataItem.designation}
+                               
+                                <span className="font-bold flex items-center"> <FaBriefcase className="mr-2" /> Designation:</span>  {dataItem.designation}
 
 
                             </div>
