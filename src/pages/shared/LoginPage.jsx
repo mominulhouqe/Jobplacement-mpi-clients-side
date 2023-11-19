@@ -64,14 +64,16 @@ const LoginPage = () => {
   const handleGooglePopup = async () => {
     try {
       await signInGoogle();
-      setShowSuccessMessage(true);
-      navigate(from, { replace: true });
     } catch (error) {
-      // Handle login error
-      console.error("Google login error:", error);
+      let errorMessage = "Login failed. Please try again.";
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      Swal.fire("Error!", errorMessage, "error");
+      return;
     }
+    Swal.fire("You Login Successfully!", "success");
   };
-
   const handleCloseSuccessMessage = () => {
     setShowSuccessMessage(false);
   };

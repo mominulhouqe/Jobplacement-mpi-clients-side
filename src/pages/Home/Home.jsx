@@ -29,9 +29,9 @@ const Home = () => {
         >
           <MenuIcon />
         </IconButton>
-        <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer}>
+        <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer} PaperProps={{ style: { width: '90%' } }} >
           <div >
-            <List>
+            <List > 
               <ListItem button>
                 {/* <ListItemText primary="Coming Soon" /> */}
                 <div className="">

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaExclamation, FaUser, FaGenderless, FaRegAddressCard, FaPhone, FaBriefcase, FaBuilding, FaTimes } from 'react-icons/fa';
+import { FaExclamation, FaUser, FaGenderless, FaRegAddressCard, FaPhone, FaBriefcase, FaBuilding, FaTimes, FaBackward } from 'react-icons/fa';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const DisplayData = () => {
     const [formData, setFormData] = useState([]);
@@ -35,9 +36,10 @@ const DisplayData = () => {
     const loadMoreItems = () => {
         setVisibleItems((prev) => prev + 10);
     };
-
+   
     return (
         <div className="m-4">
+
             <h2 className="text-2xl font-semibold mb-4">Submitted Data</h2>
             <ul className="space-y-4">
                 {formData.slice(0, visibleItems).map((dataItem) => (
@@ -56,18 +58,18 @@ const DisplayData = () => {
                         </div>
 
                         <div className="flex items-center justify-between mb-2">
-                            
+
                             <span className="font-bold flex items-center"><FaUser className="mr-2" /> Name:</span> {dataItem.name}
                         </div>
                         <div className="flex items-center justify-between mb-2">
-                         
-                            
+
+
                             <span className="font-bold flex justify-center items-center"><FaRegAddressCard className="mr-2" /> Email:</span> {dataItem.email}
                         </div>
 
                         {dataItem.photoURL && (
                             <div className="flex items-center justify-between mb-2">
-                               
+
                                 <span className="font-bold flex items-center"> <FaBriefcase className="mr-2" /> Designation:</span>  {dataItem.designation}
 
 
