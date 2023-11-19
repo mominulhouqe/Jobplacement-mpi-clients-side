@@ -15,8 +15,8 @@ const UserInfo = () => {
     return (
         <div className="p-6 my-12 mt-16 flex justify-center items-center">
             <div className="bg-gray-100 shadow-md p-6 rounded-md">
-                    <div className="flex justify-center items-center">
-                      <img className='rounded-full' src={user.photoURL} alt="" />
+                    <div className="flex justify-center items-center ">
+                      <img className='rounded-full w-28 h-28' src={user.photoURL} alt="" />
                         {/* <FaUser className="text-4xl text-blue-500" /> */}
                     </div>
                 <div className="flex justify-center items-center mb-4">
