@@ -122,6 +122,7 @@ const Register = () => {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
+        marginTop:"40px"
       }}
     >
       <Container className="my-auto " component="main" maxWidth="xs">
