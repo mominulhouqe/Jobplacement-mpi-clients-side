@@ -21,11 +21,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../../provider/AuthProvider";
 import { FaThumbsUp } from "react-icons/fa";
 import { FaWhatsapp } from "react-icons/fa";
-import TextareaAutosize from '@mui/material/TextareaAutosize';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import TextareaAutosize from "@mui/material/TextareaAutosize";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import "./Todos.css";
 
 import Popover from "@mui/material/Popover";
@@ -34,13 +34,12 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 // import { FaEllipsisV, FaTrash } from "react-icons/fa";
 
-
-
 const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(todo.text);
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useContext(AuthContext);
+  console.log(user);
   const [showMoreText, setShowMoreText] = useState(false);
 
   const [showAllImages, setShowAllImages] = useState(false);
@@ -60,7 +59,9 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   // const [isExpanded, setIsExpanded] = useState(false);
 
   const initialCommentDisplayCount = 2;
-  const [commentDisplayCount, setCommentDisplayCount] = useState(initialCommentDisplayCount);
+  const [commentDisplayCount, setCommentDisplayCount] = useState(
+    initialCommentDisplayCount
+  );
 
   const commentsToDisplay = comments.slice(0, commentDisplayCount);
 
@@ -121,7 +122,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       });
     }
   };
-
 
   const handleDeleteTodo = async () => {
     try {
@@ -195,11 +195,36 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     setAnchorEl(null);
   };
 
-
-
   const handleLikeTodo = async () => {
-    if (user) {
-      try {
+    try {
+      if (!user) {
+        // Handle the case where the user is not authenticated.
+        // You can show a login prompt or redirect the user to the login page.
+        // Example: Redirect to the login page
+        navigate("/login"); // Make sure 'navigate' is available in your component
+        throw new Error("User not authenticated");
+      }
+
+      // Check if the user has already liked the post
+      if (todo.likes && todo.likes.includes(user.uid)) {
+        // User has already liked the post, so do nothing
+        toast.info("You've already liked this post!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } else {
+        // User hasn't liked the post, so like it
+        // Update the UI to show the updated like count
+        setLikeCount(likeCount + 1);
+
+        // Optimistically update the likes array to prevent multiple likes by the same user
+        todo.likes = todo.likes ? [...todo.likes, user.uid] : [user.uid];
+
+        // Make the API call to add the like
         await axios.post(
           `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/likes`,
           {
@@ -207,8 +232,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             userName: user?.displayName,
           }
         );
-
-        setLikeCount(likeCount + 1);
 
         toast.success("Liked the post!", {
           position: "top-right",
@@ -218,22 +241,22 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
           pauseOnHover: true,
           draggable: true,
         });
-      } catch (error) {
-        console.error("Error liking post:", error);
-
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "An error occurred while liking the post.",
-        });
       }
-    } else {
-      // Handle the case where the user is not authenticated.
-      // You can show a login prompt or redirect the user to the login page.
-      // Example: Redirect to the login page
-      navigate('/login'); // Make sure 'history' is available in your component
+    } catch (error) {
+      console.error("Error liking post:", error);
+
+      // If there's an error, rollback the optimistic UI update
+      setLikeCount(likeCount);
+      todo.likes = todo.likes ? todo.likes : [];
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "An error occurred while liking the post.",
+      });
     }
   };
+
   // eslint-disable-next-line no-unused-vars
   const handleAddComment = async () => {
     if (newComment.trim() !== "") {
@@ -250,7 +273,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             email: user.email,
             timestamp: new Date().toISOString(),
             todoId: todo._id,
-
           }
         );
 
@@ -280,7 +302,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       // Handle the case where the user is not authenticated.
       // You can show a login prompt or redirect the user to the login page.
       // Example: Redirect to the login page
-      navigate('/login'); // Make sure 'history' is available in your component
+      navigate("/login"); // Make sure 'history' is available in your component
     }
   };
 
@@ -325,7 +347,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     setReplyText("");
   };
 
-
   useEffect(() => {
     const fetchLikes = async () => {
       try {
@@ -358,8 +379,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     fetchComments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todo._id]);
-
-
 
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
@@ -413,7 +432,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     }
   };
 
-
   // eslint-disable-next-line no-unused-vars
   const toggleCommentInput = () => {
     setCommentInputVisible(!commentInputVisible);
@@ -464,8 +482,9 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       sx={{
         maxWidth: "100%",
       }}
-      className={`borde bg-slate-800 rounded-lg mx-auto container overflow-hidden shadow-md mt-2 mb-2 ${isEditing ? "bg-gray-200" : ""
-        }`}
+      className={`borde bg-slate-800 rounded-lg mx-auto container overflow-hidden shadow-md mt-2 mb-2 ${
+        isEditing ? "bg-gray-200" : ""
+      }`}
     >
       <CardContent className="bg-base-200">
         <div className="flex justify-between mb-4">
@@ -492,7 +511,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                 <MoreVertIcon />
               </IconButton>
             )}
-
           </CardActions>
         </div>
 
@@ -512,19 +530,21 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                 Save
               </button>
             </div>
-
           </>
         ) : (
           <>
             <Typography
               variant="body2"
               color="text.secondary"
-              className={`text-lg ${todo.completed ? "line-through text-gray-400" : ""
-                }`}
+              className={`text-lg ${
+                todo.completed ? "line-through text-gray-400" : ""
+              }`}
             >
               {showMoreText || todo.text.split(" ").length <= 50 ? (
                 <>
-                  <div className="ml-4 mb-2 font-semibold font-serif ">{todo.text}</div>
+                  <div className="ml-4 mb-2 font-semibold font-serif ">
+                    {todo.text}
+                  </div>
                   {todo.text.split(" ").length > 50 && (
                     <button
                       className="text-blue-500 ml-1"
@@ -552,23 +572,25 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                 {/* Mapping through images to display them */}
                 {showAllImages
                   ? todo.images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Image ${index}`}
-                      className="rounded-lg cursor-pointer image  bg-slate-950"
-                      onClick={() => openFullscreenImage(image)}
-                    />
-                  ))
-                  : todo.images.slice(0, 2).map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Image ${index}`}
-                      className="rounded-lg bg-slate-950 cursor-pointer"
-                      onClick={() => openFullscreenImage(image)}
-                    />
-                  ))}
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`Image ${index}`}
+                        className="rounded-lg cursor-pointer image  bg-slate-950"
+                        onClick={() => openFullscreenImage(image)}
+                      />
+                    ))
+                  : todo.images
+                      .slice(0, 2)
+                      .map((image, index) => (
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`Image ${index}`}
+                          className="rounded-lg bg-slate-950 cursor-pointer"
+                          onClick={() => openFullscreenImage(image)}
+                        />
+                      ))}
                 {/* Show a button to view more images if there are more than 3 */}
                 {todo.images.length > 3 && !showAllImages && (
                   <button
@@ -594,7 +616,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                   </MenuItem>,
                   <MenuItem key="delete" onClick={handleDeleteTodo}>
                     <FaTrash /> Delete
-                  </MenuItem>
+                  </MenuItem>,
                 ]
               ) : (
                 <MenuItem onClick={handleReportTodo}>
@@ -624,7 +646,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                 </div>
               </div>
             )} */}
-
           </>
         )}
         <div className="border"></div>
@@ -632,24 +653,31 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
           <div className="mr-4 flex justify-center items-center">
             <IconButton onClick={handleLikeTodo}>
               <FaThumbsUp
-                className={`text-blue-500 ml-3 text-xl ${isLikedByUser ? 'text-red-500' : ''}`}
+                className={`text-blue-500 ml-3 text-xl ${
+                  isLikedByUser ? "text-red-500" : ""
+                }`}
               />
             </IconButton>
             <span className="ml-1 text-green-700"> {likeCount} </span>
           </div>
 
           <div className="flex items-center">
-            <IconButton onClick={handleShareWhatsApp} className="text-green-500">
+            <IconButton
+              onClick={handleShareWhatsApp}
+              className="text-green-500"
+            >
               <FaWhatsapp />
             </IconButton>
-            <IconButton onClick={handleShareFacebook} className="text-facebook-blue">
+            <IconButton
+              onClick={handleShareFacebook}
+              className="text-facebook-blue"
+            >
               <FaFacebook />
             </IconButton>
           </div>
         </div>
         <div className="border mb-2"></div>
         <div>
-
           <div className="flex items-center space-x-1 mb-1">
             <Avatar
               src={user?.photoURL}
@@ -676,17 +704,24 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                 </Button>
               </div>
             </div>
-
           </div>
-
 
           <ul className="space-y-1 w-[96%] ml-auto">
             {commentsToDisplay.map((comment, index) => (
-              <li key={index} className="flex  items-start  justify-center space-x-2 p-1 bg-white">
-                <Avatar src={comment.photoURL} aria-label="user-profile" sx={{ width: 30, height: 30 }} />
+              <li
+                key={index}
+                className="flex  items-start  justify-center space-x-2 p-1 bg-white"
+              >
+                <Avatar
+                  src={comment.photoURL}
+                  aria-label="user-profile"
+                  sx={{ width: 30, height: 30 }}
+                />
                 <div className="flex flex-col w-full">
                   <div className="my-1">
-                    <Typography variant="subtitle1">{comment.userName}</Typography>
+                    <Typography variant="subtitle1">
+                      {comment.userName}
+                    </Typography>
                     <Typography variant="caption" color="textSecondary">
                       {formatTimeAgo(comment.timestamp)}
                     </Typography>
@@ -698,7 +733,11 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                       {replyingTo === comment._id && (
                         <Paper elevation={3} className="p-2 rounded-lg mt-2">
                           <div className="flex justify-center items-center mb-4">
-                            <Avatar src={user?.photoURL} aria-label="user-profile" sx={{ width: 40, height: 40 }} />
+                            <Avatar
+                              src={user?.photoURL}
+                              aria-label="user-profile"
+                              sx={{ width: 40, height: 40 }}
+                            />
                             <TextareaAutosize
                               rowsMin={3}
                               value={replyText}
@@ -707,10 +746,20 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                               className="w-full ml-2 outline-none resize-none"
                             />
                           </div>
-                          <Button onClick={handleAddReply} variant="contained" color="primary" className="mt-2 ml-2 btn-xs">
+                          <Button
+                            onClick={handleAddReply}
+                            variant="contained"
+                            color="primary"
+                            className="mt-2 ml-2 btn-xs"
+                          >
                             Reply
                           </Button>
-                          <Button onClick={cancelReply} variant="outlined" color="secondary" className="mt-2 ml-2 btn-xs">
+                          <Button
+                            onClick={cancelReply}
+                            variant="outlined"
+                            color="secondary"
+                            className="mt-2 ml-2 btn-xs"
+                          >
                             Cancel
                           </Button>
                         </Paper>
@@ -723,7 +772,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                       >
                         Reply
                       </Button>
-
 
                       {/* Add the 3 dot icon */}
                       <div className="relative inline-block text-left">
@@ -749,16 +797,16 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
                           }}
                         >
                           <List component="nav" aria-label="comment menu">
-                            <ListItem button onClick={() => handleDeleteComment(comment._id)}>
+                            <ListItem
+                              button
+                              onClick={() => handleDeleteComment(comment._id)}
+                            >
                               <FaTrash className="mr-2 text-red-500" />
                               <ListItemText primary="Delete" />
                             </ListItem>
                           </List>
                         </Popover>
                       </div>
-
-
-
                     </div>
                   </Paper>
                 </div>
@@ -782,10 +830,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
               </li>
             )}
           </ul>
-
         </div>
-
-
       </CardContent>
 
       <ToastContainer />

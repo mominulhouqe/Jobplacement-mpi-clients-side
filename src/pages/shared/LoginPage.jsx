@@ -73,6 +73,7 @@ const LoginPage = () => {
       return;
     }
     Swal.fire("You Login Successfully!", "success");
+    navigate(from, { replace: true });
   };
   const handleCloseSuccessMessage = () => {
     setShowSuccessMessage(false);
