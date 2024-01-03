@@ -24,6 +24,7 @@ const JobPlacement = () => {
         session: data.session,
         roll: data.roll,
         compnayName: data.companyName,
+        department: data.department,
         companyLocation: data.companyLocation,
         designation: data.designation,
         jobSector: data.jobSector,
@@ -144,15 +145,26 @@ const JobPlacement = () => {
         />
         {errors.Roll && <span className="text-red-500">Roll is required</span>}
       </div>
-      <TextField
-        label="companyName"
-        {...register("companyName", { required: true })}
-        fullWidth
-        margin="normal"
-      />
-      {errors.companyName && (
-        <span className="text-red-500">Company Name is required</span>
-      )}
+      <div className="lg:flex lg:gap-1">
+        <TextField
+          label="companyName"
+          {...register("companyName", { required: true })}
+          fullWidth
+          margin="normal"
+        />
+        {errors.companyName && (
+          <span className="text-red-500">Company Name is required</span>
+        )}
+        <TextField
+          label="Department"
+          {...register("department", { required: true })}
+          fullWidth
+          margin="normal"
+        />
+        {errors.Department && (
+          <span className="text-red-500">Company Name is required</span>
+        )}
+      </div>
 
       <TextField
         label="Location of the Company"

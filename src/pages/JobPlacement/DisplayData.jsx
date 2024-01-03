@@ -15,24 +15,44 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  TextField,
 } from "@mui/material";
 
 const DisplayData = () => {
   const [formData, setFormData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, []); // Initial fetch
+
+  useEffect(() => {
+    // Filter data whenever filter changes
+    const filtered = formData.filter((dataItem) => {
+      const lowercaseFilter = filter.toLowerCase();
+      const lowercaseDesignation = (dataItem.designation || "").toLowerCase();
+      const lowercaseDepartment = (dataItem.department || "").toLowerCase();
+
+      return (
+        lowercaseDesignation.includes(lowercaseFilter) ||
+        lowercaseDepartment.includes(lowercaseFilter)
+      );
+    });
+
+    setFilteredData(filtered);
+  }, [filter, formData]);
 
   const fetchData = async () => {
     try {
       const response = await axios.get(
         "https://blogs-server-seven.vercel.app/api/forms"
       );
+      console.log(response.data);
       setFormData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -51,12 +71,21 @@ const DisplayData = () => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = formData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
-    <div className="m-4 overflow-x-auto">
+    <div className="m-4 container mx-auto overflow-x-auto">
       <h2 className="text-2xl font-semibold mb-4">Submitted Data</h2>
+      <TextField
+        label="Filter by Designation/Department"
+        variant="outlined"
+        fullWidth
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        className="mb-4"
+      />
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
@@ -71,6 +100,12 @@ const DisplayData = () => {
               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Email
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Department
             </th>
             <th
               scope="col"
@@ -98,6 +133,11 @@ const DisplayData = () => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">{dataItem.email}</div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="text-sm text-gray-900">
+                  {dataItem.department}
+                </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">
