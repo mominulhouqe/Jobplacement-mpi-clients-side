@@ -12,6 +12,8 @@ import JobPlacement from "./pages/JobPlacement/JobPlacement.jsx";
 import DisplayData from "./pages/JobPlacement/DisplayData.jsx";
 import Gallary from "./pages/Gallary/Gallary.jsx";
 import UserInfo from "./pages/Users/UserInfo.jsx";
+import PrivateRoute from "./routes/PrivateRoute.jsx";
+import Dashboard from "./Dashboard/Dashboard.jsx";
 
 
 const router = createBrowserRouter([
@@ -48,6 +50,21 @@ const router = createBrowserRouter([
         path: '/register',
         element: <Register />,
       },
+      {
+        path: '/dashboard',
+        element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
+        // children: [
+        //     {
+        //         path: "add-product",
+        //         element: <AddProduct></AddProduct>
+        //     },
+        //     {
+        //         path: "all-product",
+        //         element: <AllProduct></AllProduct>
+        //     },
+
+        // ]
+    }
       
     ]
   }

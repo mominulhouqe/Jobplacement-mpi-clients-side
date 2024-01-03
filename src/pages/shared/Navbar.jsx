@@ -1,4 +1,4 @@
-import  { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   AppBar,
@@ -15,7 +15,7 @@ import {
 import { FaSignOutAlt, FaBars, FaTimes, FaUser } from "react-icons/fa";
 import { AuthContext } from "../../provider/AuthProvider";
 import "./Navbar.css";
-import logo from '../../assets/download.jpg'
+import logo from "../../assets/download.jpg";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -54,12 +54,30 @@ const Navbar = () => {
       <AppBar position="fixed" color="primary">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link to="/"  onClick={handleItemClick} style={{ textDecoration: "none", color: "#FFF" }} className="flex justify-center items-center">
-            <img src={logo} alt="" className="w-10 border rounded-full"/>
-              <svg xmlns="http://www.w3.org/2000/svg" width="auto" height="40" version="1.1">
-                <text x="10" y="30" fontFamily="Arial" fontSize="24" fill="#ffffff">  JobPlacement ~ MBPI</text>
+            <Link
+              to="/"
+              onClick={handleItemClick}
+              style={{ textDecoration: "none", color: "#FFF" }}
+              className="flex justify-center items-center"
+            >
+              <img src={logo} alt="" className="w-10 border rounded-full" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="auto"
+                height="40"
+                version="1.1"
+              >
+                <text
+                  x="10"
+                  y="30"
+                  fontFamily="Arial"
+                  fontSize="24"
+                  fill="#ffffff"
+                >
+                  {" "}
+                  JobPlacement ~ MBPI
+                </text>
               </svg>
-
             </Link>
           </Typography>
           <IconButton
@@ -72,14 +90,16 @@ const Navbar = () => {
             {open ? <FaTimes /> : <FaBars />}
           </IconButton>
           <ul
-            className={`md:flex md:items-center md:pb-0 pb-12 absolute md:static bg-primary md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in ${open ? "top-11 " : "top-[-490px]"
-              }`}
+            className={`md:flex md:items-center md:pb-0 pb-12 absolute md:static bg-primary md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in ${
+              open ? "top-11 " : "top-[-490px]"
+            }`}
           >
             <li className="md:ml-4 my-2">
               <Link
                 to="/forms"
                 className="text-white px-2 py-1 rounded-lg duration-500"
-                onClick={handleItemClick} >
+                onClick={handleItemClick}
+              >
                 FORMS
               </Link>
             </li>
@@ -87,7 +107,8 @@ const Navbar = () => {
               <Link
                 to="/gallary"
                 className="text-white px-2 py-1 rounded-lg duration-500"
-                onClick={handleItemClick} >
+                onClick={handleItemClick}
+              >
                 GALLERY
               </Link>
             </li>
@@ -95,10 +116,24 @@ const Navbar = () => {
               <Link
                 to="/"
                 className="text-white px-2 py-1 rounded-lg duration-500"
-                onClick={handleItemClick}>
+                onClick={handleItemClick}
+              >
                 CONTACT
               </Link>
             </li>
+            {user ? (
+              <li role="none" className="flex items-stretch">
+                <Link
+                  to="/dashboard"
+                  role="menuitem"
+                  className="flex items-center gap-2 py-4  uppercase transition-colors duration-300 hover:text-[#fe0800] focus:text-[#fe0800] focus:outline-none  lg:px-8"
+                  href="#"
+                  onClick={handleItemClick}
+                >
+                  <span>Dashboard</span>
+                </Link>
+              </li>
+            ) : null}
           </ul>
           <div className="md:ml-4">
             {user ? (
