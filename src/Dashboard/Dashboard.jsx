@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import { BiAddToQueue, BiDotsHorizontal } from "react-icons/bi";
 import { AuthContext } from "../provider/AuthProvider";
 import useAdmin from "../hooks/useAdmin";
-
+import DisplayData from "../pages/JobPlacement/DisplayData";
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
@@ -20,14 +20,14 @@ const Dashboard = () => {
       <div className="drawer lg:drawer-open my-16">
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content">
-          <Outlet></Outlet>
-          {/* Page content here */}
           <label
             htmlFor="my-drawer-2"
             className="btn btn-primary btn-sm drawer-button lg:hidden"
           >
             <BiDotsHorizontal /> open
           </label>
+          <Outlet></Outlet>
+          <div></div>
         </div>
         <div className="drawer-side bg-primary/40 sticky">
           <label htmlFor="my-drawer-2" className=""></label>
@@ -53,9 +53,9 @@ const Dashboard = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link to="/dashboard/all-product">
+                    <Link to="/dashboard/student-form">
                       {" "}
-                      <BiAddToQueue></BiAddToQueue> All Product
+                      <BiAddToQueue></BiAddToQueue>Student Forms
                     </Link>
                   </li>
                 </div>

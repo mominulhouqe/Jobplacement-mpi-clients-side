@@ -14,61 +14,63 @@ import Gallary from "./pages/Gallary/Gallary.jsx";
 import UserInfo from "./pages/Users/UserInfo.jsx";
 import PrivateRoute from "./routes/PrivateRoute.jsx";
 import Dashboard from "./Dashboard/Dashboard.jsx";
-
+import FormCollection from "./Dashboard/FormCollection/FormCollection.jsx";
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <Main />,
     errorElement: <ErrorPage />,
     children: [
       {
-        path: '/',
-        element: <Home />
+        path: "/",
+        element: <Home />,
       },
       {
-        path: '/userprofile',
-        element: <UserInfo />
+        path: "/userprofile",
+        element: <UserInfo />,
       },
       {
-        path: '/forms',
-        element: <JobPlacement />
+        path: "/forms",
+        element: <JobPlacement />,
       },
       {
-        path: '/info-details',
-        element: <DisplayData />
+        path: "/info-details",
+        element: <DisplayData />,
       },
       {
-        path: '/gallary',
-        element: <Gallary />
+        path: "/gallary",
+        element: <Gallary />,
       },
       {
-        path: '/login',
+        path: "/login",
         element: <LoginForm />,
       },
       {
-        path: '/register',
+        path: "/register",
         element: <Register />,
       },
       {
-        path: '/dashboard',
-        element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
-        // children: [
-        //     {
-        //         path: "add-product",
-        //         element: <AddProduct></AddProduct>
-        //     },
-        //     {
-        //         path: "all-product",
-        //         element: <AllProduct></AllProduct>
-        //     },
-
-        // ]
-    }
-      
-    ]
-  }
-])
+        path: "/dashboard",
+        element: (
+          <PrivateRoute>
+            <Dashboard></Dashboard>
+          </PrivateRoute>
+        ),
+        children: [
+          {
+            path: "pending-post",
+            element: <FormCollection />,
+          },
+          {
+            path: "student-form",
+            element: <FormCollection />,
+          },
+        ],
+      },
+    ],
+  },
+]);
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
