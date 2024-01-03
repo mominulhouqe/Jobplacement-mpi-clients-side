@@ -15,6 +15,7 @@ import UserInfo from "./pages/Users/UserInfo.jsx";
 import PrivateRoute from "./routes/PrivateRoute.jsx";
 import Dashboard from "./Dashboard/Dashboard.jsx";
 import FormCollection from "./Dashboard/FormCollection/FormCollection.jsx";
+import DashboardHome from "./Dashboard/DashboardHome/DashboardHome.jsx";
 
 const router = createBrowserRouter([
   {
@@ -50,23 +51,27 @@ const router = createBrowserRouter([
         path: "/register",
         element: <Register />,
       },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <PrivateRoute>
+        <Dashboard></Dashboard>
+      </PrivateRoute>
+    ),
+    children: [
       {
-        path: "/dashboard",
-        element: (
-          <PrivateRoute>
-            <Dashboard></Dashboard>
-          </PrivateRoute>
-        ),
-        children: [
-          {
-            path: "pending-post",
-            element: <FormCollection />,
-          },
-          {
-            path: "student-form",
-            element: <FormCollection />,
-          },
-        ],
+        path: "userhome",
+        element: <DashboardHome />
+      },
+      {
+        path: "pending-post",
+        element: <FormCollection />,
+      },
+      {
+        path: "student-form",
+        element: <FormCollection />,
       },
     ],
   },

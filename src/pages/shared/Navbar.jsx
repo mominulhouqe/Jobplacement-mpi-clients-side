@@ -51,7 +51,7 @@ const Navbar = () => {
 
   return (
     <div>
-      <AppBar position="fixed" color="primary">
+      <AppBar className="fixed top-0 z-10"  color="primary">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <Link
@@ -124,7 +124,7 @@ const Navbar = () => {
             {user ? (
               <li role="none" className="flex items-stretch">
                 <Link
-                  to="/dashboard"
+                  to="/dashboard/userhome"
                   role="menuitem"
                   className="flex items-center gap-2 py-4  uppercase transition-colors duration-300 hover:text-[#fe0800] focus:text-[#fe0800] focus:outline-none  lg:px-8"
                   href="#"

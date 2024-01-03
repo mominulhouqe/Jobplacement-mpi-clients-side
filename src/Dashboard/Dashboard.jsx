@@ -1,13 +1,20 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { BiAddToQueue, BiDotsHorizontal } from "react-icons/bi";
+import { BiAddToQueue } from "react-icons/bi";
 import { AuthContext } from "../provider/AuthProvider";
 import useAdmin from "../hooks/useAdmin";
-import DisplayData from "../pages/JobPlacement/DisplayData";
+import Navbar from "../pages/shared/Navbar";
+import { Drawer, List, ListItem, IconButton } from "@mui/material";
+import { Menu as MenuIcon } from "@mui/icons-material";
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
   const [isAdmin, isAdminLoading] = useAdmin();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
 
   if (isAdminLoading) {
     return (
@@ -17,68 +24,73 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="drawer lg:drawer-open my-16">
-        <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-        <div className="drawer-content">
-          <label
-            htmlFor="my-drawer-2"
-            className="btn btn-primary btn-sm drawer-button lg:hidden"
-          >
-            <BiDotsHorizontal /> open
-          </label>
-          <Outlet></Outlet>
-          <div></div>
-        </div>
-        <div className="drawer-side bg-primary/40 sticky">
-          <label htmlFor="my-drawer-2" className=""></label>
-          <ul className="menu p-4 w-80 h-full text-black  ">
-            {isAdmin ? (
-              // Admin content
-              <>
-                <div className="mx-auto text-center w-3/4 my-10">
-                  <img
-                    src={user?.photoURL}
-                    className="mx-auto rounded-full"
-                    alt=""
-                  />
-                  <h3 className="text-2xl font-bold">{user.displayName}</h3>
-                  <p>{user.email}</p>
+      <Navbar />
+
+      <div className="mt-16">
+        {/* Small Device - Menu Icon */}
+        <IconButton
+          aria-label="Open Menu"
+          onClick={toggleDrawer}
+          edge="end"
+          color="inherit"
+        >
+          <MenuIcon />
+        </IconButton>
+
+        {/* Responsive Drawer */}
+        <Drawer
+          anchor="right"
+          open={isDrawerOpen}
+          onClose={toggleDrawer}
+          PaperProps={{ style: { width: "50%" } }}
+        >
+          <List>
+            <ListItem>
+              <div className="mx-auto text-center my-10">
+                <img
+                  src={user?.photoURL || user.photoURL}
+                  className="mx-auto rounded-full"
+                  alt=""
+                />
+                <h3 className="text-2xl font-bold">{user.displayName}</h3>
+                <p>{user.email}</p>
+              </div>
+            </ListItem>
+            <ListItem>
+              <ul className="menu p-4 h-full text-black">
+                {isAdmin ? (
+                  // Admin content
+                  <>
+                    <li>
+                      <Link to="/"> Home</Link>
+                    </li>
+                    <li>
+                      <Link to="/dashboard/add-product">
+                        {" "}
+                        <BiAddToQueue /> Add Product
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/dashboard/student-form">
+                        {" "}
+                        <BiAddToQueue /> Student Forms
+                      </Link>
+                    </li>
+                  </>
+                ) : (
+                  // Regular user content
                   <li>
                     <Link to="/"> Home</Link>
                   </li>
-                  <li>
-                    <Link to="/dashboard/add-product">
-                      {" "}
-                      <BiAddToQueue></BiAddToQueue> Add Product
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/dashboard/student-form">
-                      {" "}
-                      <BiAddToQueue></BiAddToQueue>Student Forms
-                    </Link>
-                  </li>
-                </div>
-              </>
-            ) : (
-              // Regular user content
-              <>
-                <div className="mx-auto text-center w-3/4 my-10">
-                  <img
-                    src={user.photoURL}
-                    className="mx-auto rounded-full"
-                    alt=""
-                  />
-                  <h3 className="text-2xl font-bold">{user.displayName}</h3>
-                  <p>{user.email}</p>
-                </div>
-                <li>
-                  <Link to="/"> Home</Link>
-                </li>
-              </>
-            )}
-          </ul>
-        </div>
+                )}
+              </ul>
+            </ListItem>
+          </List>
+        </Drawer>
+      </div>
+
+      <div>
+        <Outlet />
       </div>
     </>
   );

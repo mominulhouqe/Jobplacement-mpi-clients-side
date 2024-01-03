@@ -55,7 +55,7 @@ const DisplayData = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   return (
-    <div className="m-4">
+    <div className="m-4 overflow-x-auto">
       <h2 className="text-2xl font-semibold mb-4">Submitted Data</h2>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
