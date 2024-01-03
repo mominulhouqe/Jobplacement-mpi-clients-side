@@ -26,7 +26,7 @@ import {
 } from "firebase/auth";
 import { Navigate, useNavigate } from "react-router-dom";
 import app from "../../firebase.config";
-import image from '../../assets/asd.jpg'
+import image from "../../assets/asd.jpg";
 
 const Register = () => {
   const auth = getAuth(app);
@@ -86,10 +86,10 @@ const Register = () => {
             photoURL: photoURL,
           };
 
-          const apiResponse = await fetch('http://localhost:5000/users', {
-            method: 'POST',
+          const apiResponse = await fetch("http://localhost:5000/users", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(saveUser),
           });
@@ -122,7 +122,7 @@ const Register = () => {
   const handleGooglePopup = async () => {
     try {
       await signInGoogle();
-  
+
       // Additional logic after successful Google sign-up
       const currentUser = auth.currentUser;
       const saveUser = {
@@ -130,22 +130,20 @@ const Register = () => {
         email: currentUser.email,
         photoURL: currentUser.photoURL,
       };
-  
-      const apiResponse = await fetch('http://localhost:5000/users', {
-        method: 'POST',
+
+      const apiResponse = await fetch("http://localhost:5000/users", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(saveUser),
       });
-  
+
       // Check the response status and handle accordingly
       if (apiResponse.ok) {
         Swal.fire("You Login Successfully!", "success");
         // Additional logic or redirection if needed
-      } else {
-        console.error("API call failed:", apiResponse.statusText);
-        Swal.fire("Error!", "API call failed.", "error");
+        navigate("/login");
       }
     } catch (error) {
       let errorMessage = "Registration failed. Please try again.";
@@ -156,7 +154,7 @@ const Register = () => {
       return;
     }
   };
-  
+
   return (
     <Box
       sx={{
@@ -167,7 +165,7 @@ const Register = () => {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
-        marginTop:"40px"
+        marginTop: "40px",
       }}
     >
       <Container className="my-auto " component="main" maxWidth="xs">
@@ -193,7 +191,10 @@ const Register = () => {
             Register
           </Typography>
 
-          <form onSubmit={handleRegister} style={{ width: "100%", marginTop: 2 }}>
+          <form
+            onSubmit={handleRegister}
+            style={{ width: "100%", marginTop: 2 }}
+          >
             <TextField
               margin="normal"
               required
@@ -218,7 +219,7 @@ const Register = () => {
                   mt: 2,
                   backgroundColor: "#2196F3",
                   color: "#fff",
-                  '&:hover': {
+                  "&:hover": {
                     backgroundColor: "#1976D2",
                   },
                 }}
@@ -228,7 +229,6 @@ const Register = () => {
               </Button>
             </label>
             {selectedFile && <span>Selected file: {selectedFile.name}</span>}
-
 
             <TextField
               margin="normal"
@@ -251,10 +251,7 @@ const Register = () => {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        onClick={togglePasswordVisibility}
-                        edge="end"
-                      >
+                      <IconButton onClick={togglePasswordVisibility} edge="end">
                         {passwordVisible ? <FaEye /> : <FaEyeSlash />}
                       </IconButton>
                     </InputAdornment>
@@ -283,7 +280,7 @@ const Register = () => {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link to="/login" variant="body2">
+                <Link to="/login" className="cursor-pointer">
                   Already have an account? Sign In
                 </Link>
               </Grid>

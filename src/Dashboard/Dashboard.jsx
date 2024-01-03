@@ -25,7 +25,6 @@ const Dashboard = () => {
   return (
     <>
       <Navbar />
-
       <div className="mt-16">
         {/* Small Device - Menu Icon */}
         <IconButton
@@ -36,7 +35,6 @@ const Dashboard = () => {
         >
           <MenuIcon />
         </IconButton>
-
         {/* Responsive Drawer */}
         <Drawer
           anchor="right"
@@ -88,7 +86,6 @@ const Dashboard = () => {
           </List>
         </Drawer>
       </div>
-
       <div>
         <Outlet />
       </div>

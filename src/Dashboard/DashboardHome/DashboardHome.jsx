@@ -3,7 +3,6 @@ import { Fade, Slide } from "react-awesome-reveal";
 import { AiOutlinePlayCircle } from "react-icons/ai";
 import { AuthContext } from "../../provider/AuthProvider";
 
-
 const DashboardHome = () => {
   const { loading } = useContext(AuthContext);
   if (loading) {
@@ -29,7 +28,7 @@ const DashboardHome = () => {
           </p>
           <button className="mt-8 bg-white text-blue-500 hover:bg-blue-500 hover:text-white py-2 px-4 rounded-full">
             <AiOutlinePlayCircle className="inline-block mr-2" size={20} />
-              Get Started
+            Get Started
           </button>
         </Fade>
       </div>
