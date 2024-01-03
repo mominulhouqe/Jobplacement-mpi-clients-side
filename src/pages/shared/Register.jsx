@@ -86,13 +86,16 @@ const Register = () => {
             photoURL: photoURL,
           };
 
-          const apiResponse = await fetch("http://localhost:5000/users", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(saveUser),
-          });
+          const apiResponse = await fetch(
+            "https://userinformation.vercel.app/users",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(saveUser),
+            }
+          );
 
           // Check the response status and handle accordingly
           if (apiResponse.ok) {
@@ -131,13 +134,16 @@ const Register = () => {
         photoURL: currentUser.photoURL,
       };
 
-      const apiResponse = await fetch("http://localhost:5000/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveUser),
-      });
+      const apiResponse = await fetch(
+        "https://userinformation.vercel.app/users",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(saveUser),
+        }
+      );
 
       // Check the response status and handle accordingly
       if (apiResponse.ok) {

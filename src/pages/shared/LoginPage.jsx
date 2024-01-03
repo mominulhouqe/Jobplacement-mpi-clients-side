@@ -46,8 +46,8 @@ const LoginPage = () => {
     try {
       await signIn(email, password);
       Swal.fire({
-        icon: 'success',
-        title: 'Login successful!',
+        icon: "success",
+        title: "Login successful!",
         showConfirmButton: false,
         timer: 2000,
       });
@@ -56,9 +56,9 @@ const LoginPage = () => {
       navigate(from, { replace: true });
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Login failed',
-        text: 'Please check your credentials.',
+        icon: "error",
+        title: "Login failed",
+        text: "Please check your credentials.",
       });
     }
   };
@@ -76,13 +76,16 @@ const LoginPage = () => {
       };
 
       // Make an API call to your server
-      const apiResponse = await fetch('http://localhost:5000/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(saveUser),
-      });
+      const apiResponse = await fetch(
+        "https://userinformation.vercel.app/users",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(saveUser),
+        }
+      );
 
       // Check the response status and handle accordingly
       if (apiResponse.ok) {
