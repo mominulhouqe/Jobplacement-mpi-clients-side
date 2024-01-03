@@ -82,7 +82,7 @@ const Task = () => {
       // Clear the success message after a few seconds (e.g., 3 seconds)
       setTimeout(() => {
         setSuccessMessage("");
-      }, 3000);
+      }, 1000);
 
       setText("");
       setFiles([]); // Reset the selected files after adding the todo

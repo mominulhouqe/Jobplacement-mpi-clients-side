@@ -79,8 +79,29 @@ const Register = () => {
             photoURL: photoURL,
           });
 
-          Swal.fire("You Register Successfully!", "success");
-          navigate("/login"); // Redirect to login page
+          // Make an API call to your server
+          const saveUser = {
+            name: name,
+            email: email,
+            photoURL: photoURL,
+          };
+
+          const apiResponse = await fetch('http://localhost:5000/users', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(saveUser),
+          });
+
+          // Check the response status and handle accordingly
+          if (apiResponse.ok) {
+            Swal.fire("You Register Successfully!", "success");
+            navigate("/login"); // Redirect to login page
+          } else {
+            console.error("API call failed:", apiResponse.statusText);
+            Swal.fire("Error!", "API call failed.", "error");
+          }
         } else {
           console.error("Image upload failed:", imgResponse.error.message);
           Swal.fire("Error!", "Image upload failed.", "error");
@@ -101,6 +122,31 @@ const Register = () => {
   const handleGooglePopup = async () => {
     try {
       await signInGoogle();
+  
+      // Additional logic after successful Google sign-up
+      const currentUser = auth.currentUser;
+      const saveUser = {
+        name: currentUser.displayName,
+        email: currentUser.email,
+        photoURL: currentUser.photoURL,
+      };
+  
+      const apiResponse = await fetch('http://localhost:5000/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(saveUser),
+      });
+  
+      // Check the response status and handle accordingly
+      if (apiResponse.ok) {
+        Swal.fire("You Login Successfully!", "success");
+        // Additional logic or redirection if needed
+      } else {
+        console.error("API call failed:", apiResponse.statusText);
+        Swal.fire("Error!", "API call failed.", "error");
+      }
     } catch (error) {
       let errorMessage = "Registration failed. Please try again.";
       if (error.message) {
@@ -109,9 +155,8 @@ const Register = () => {
       Swal.fire("Error!", errorMessage, "error");
       return;
     }
-    Swal.fire("You Login Successfully!", "success");
   };
-
+  
   return (
     <Box
       sx={{

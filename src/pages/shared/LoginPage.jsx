@@ -17,6 +17,8 @@ import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import { AuthContext } from "../../provider/AuthProvider";
 import "./LoginForm.css";
 import Swal from "sweetalert2";
+import app from "../../firebase.config";
+import { getAuth } from "firebase/auth";
 
 const TransitionUp = (props) => {
   return <Slide {...props} direction="up" />;
@@ -34,7 +36,7 @@ const LoginPage = () => {
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
-
+  const auth = getAuth(app);
   const handleLogin = async (event) => {
     event.preventDefault();
     const form = event.target;
@@ -64,6 +66,32 @@ const LoginPage = () => {
   const handleGooglePopup = async () => {
     try {
       await signInGoogle();
+
+      // Additional logic after successful Google sign-in
+      const currentUser = auth.currentUser;
+      const saveUser = {
+        name: currentUser.displayName,
+        email: currentUser.email,
+        photoURL: currentUser.photoURL,
+      };
+
+      // Make an API call to your server
+      const apiResponse = await fetch('http://localhost:5000/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(saveUser),
+      });
+
+      // Check the response status and handle accordingly
+      if (apiResponse.ok) {
+        Swal.fire("You Login Successfully!", "success");
+        navigate(from, { replace: true });
+      } else {
+        console.error("API call failed:", apiResponse.statusText);
+        Swal.fire("Error!", "API call failed.", "error");
+      }
     } catch (error) {
       let errorMessage = "Login failed. Please try again.";
       if (error.message) {
@@ -72,9 +100,8 @@ const LoginPage = () => {
       Swal.fire("Error!", errorMessage, "error");
       return;
     }
-    Swal.fire("You Login Successfully!", "success");
-    navigate(from, { replace: true });
   };
+
   const handleCloseSuccessMessage = () => {
     setShowSuccessMessage(false);
   };

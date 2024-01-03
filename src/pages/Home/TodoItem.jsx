@@ -39,7 +39,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const [text, setText] = useState(todo.text);
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useContext(AuthContext);
-  console.log(user);
   const [showMoreText, setShowMoreText] = useState(false);
 
   const [showAllImages, setShowAllImages] = useState(false);
