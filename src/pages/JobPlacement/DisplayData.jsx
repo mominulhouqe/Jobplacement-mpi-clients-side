@@ -76,16 +76,18 @@ const DisplayData = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="m-4 container mx-auto overflow-x-auto">
+    <div className="m-4 container mx-auto overflow-x-auto px-4">
       <h2 className="text-2xl font-semibold mb-4">Submitted Data</h2>
-      <TextField
-        label="Filter by Designation/Department"
-        variant="outlined"
-        fullWidth
-        value={filter}
-        onChange={(e) => setFilter(e.target.value)}
-        className="mb-4"
-      />
+      <div className="md:w-1/4 my-6">
+        <TextField
+          label="Filter by Designation/Department"
+          variant="outlined"
+          fullWidth
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="mb-4 "
+        />
+      </div>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
