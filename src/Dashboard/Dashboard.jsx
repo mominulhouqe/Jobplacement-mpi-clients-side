@@ -63,9 +63,9 @@ const Dashboard = () => {
                       <Link to="/"> Home</Link>
                     </li>
                     <li>
-                      <Link to="/dashboard/add-product">
+                      <Link to="/dashboard/all-post">
                         {" "}
-                        <BiAddToQueue /> Add Product
+                        <BiAddToQueue /> All Post
                       </Link>
                     </li>
                     <li>

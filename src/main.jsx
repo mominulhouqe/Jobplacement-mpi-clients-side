@@ -16,6 +16,7 @@ import PrivateRoute from "./routes/PrivateRoute.jsx";
 import Dashboard from "./Dashboard/Dashboard.jsx";
 import FormCollection from "./Dashboard/FormCollection/FormCollection.jsx";
 import DashboardHome from "./Dashboard/DashboardHome/DashboardHome.jsx";
+import AllPost from "./Dashboard/AllPost/AllPost.jsx";
 
 const router = createBrowserRouter([
   {
@@ -66,8 +67,8 @@ const router = createBrowserRouter([
         element: <DashboardHome />
       },
       {
-        path: "pending-post",
-        element: <FormCollection />,
+        path: "all-post",
+        element: <AllPost />,
       },
       {
         path: "student-form",
