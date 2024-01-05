@@ -9,6 +9,8 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CheckIcon from "@mui/icons-material/Check";
+import ClearIcon from "@mui/icons-material/Clear";
 import Swal from "sweetalert2";
 
 const AllPost = () => {
@@ -19,10 +21,11 @@ const AllPost = () => {
   const fetchPosts = async () => {
     try {
       const response = await axios.get(
-        "https://blogs-server-seven.vercel.app/api/todos"
+        "https://userinformation.vercel.app/api/todos"
       );
       if (Array.isArray(response.data)) {
         setPosts(response.data);
+        console.log(response.data);
         setLoading(false);
       } else {
         setError("Posts not received");
@@ -37,6 +40,7 @@ const AllPost = () => {
     const pollInterval = setInterval(fetchPosts, 5000);
     return () => clearInterval(pollInterval);
   }, []);
+
   const onDelete = (deletedTodoId) => {
     setPosts(posts.filter((post) => post._id !== deletedTodoId));
   };
@@ -44,7 +48,7 @@ const AllPost = () => {
   const handleDeleteTodo = async (postId) => {
     try {
       await axios.delete(
-        `https://blogs-server-seven.vercel.app/api/todos/${postId}`
+        `https://userinformation.vercel.app/api/todos/${postId}`
       );
 
       onDelete(postId);
@@ -60,6 +64,34 @@ const AllPost = () => {
         title: "Error",
         text: "An error occurred while deleting the post.",
       });
+    }
+  };
+  const handleApprovePost = async (postId) => {
+    try {
+      const response = await axios.put(
+        `https://userinformation.vercel.app/api/todos/${postId}/status`,
+        { status: "approved" }
+      );
+
+      console.log("Todo approved:", response.data);
+      // You may want to update the UI or trigger a refetch of todos
+    } catch (error) {
+      console.error("Error approving todo:", error);
+    }
+  };
+
+  const handleRejectPost = async (postId) => {
+    try {
+      const response = await axios.put(
+        `https://userinformation.vercel.app/api/todos/${postId}/status`,
+        {
+          status: "rejected",
+        }
+      );
+      console.log("Todo rejected:", response.data);
+      // You may want to update the UI or trigger a refetch of todos
+    } catch (error) {
+      console.error("Error rejecting todo:", error);
     }
   };
 
@@ -109,6 +141,25 @@ const AllPost = () => {
                     </div>
                   </div>
                   <div>
+                    {post.status === "pending" && (
+                      <div>
+                        <IconButton
+                          edge="end"
+                          aria-label="approve"
+                          onClick={() => handleApprovePost(post._id)}
+                        >
+                          <CheckIcon />
+                        </IconButton>
+                        <IconButton
+                          edge="end"
+                          aria-label="reject"
+                          onClick={() => handleRejectPost(post._id)}
+                        >
+                          <ClearIcon />
+                        </IconButton>
+                      </div>
+                    )}
+
                     <IconButton
                       edge="end"
                       aria-label="delete"

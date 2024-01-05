@@ -91,10 +91,7 @@ const LoginPage = () => {
       if (apiResponse.ok) {
         Swal.fire("You Login Successfully!", "success");
         navigate(from, { replace: true });
-      } else {
-        console.error("API call failed:", apiResponse.statusText);
-        Swal.fire("Error!", "API call failed.", "error");
-      }
+      } 
     } catch (error) {
       let errorMessage = "Login failed. Please try again.";
       if (error.message) {

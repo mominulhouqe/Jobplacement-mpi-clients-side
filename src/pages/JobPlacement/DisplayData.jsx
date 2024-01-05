@@ -50,7 +50,7 @@ const DisplayData = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "https://blogs-server-seven.vercel.app/api/forms"
+        "https://userinformation.vercel.app/api/forms"
       );
       console.log(response.data);
       setFormData(response.data);

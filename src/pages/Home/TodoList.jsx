@@ -11,16 +11,18 @@ const TodoList = () => {
   const fetchTodos = async () => {
     try {
       const response = await axios.get(
-        "https://blogs-server-seven.vercel.app/api/todos"
+        "https://userinformation.vercel.app/api/todos"
       );
       if (Array.isArray(response.data)) {
-        console.log(response.data);
-        setTodos(response.data);
+        const filteredTodos = response.data.filter(
+          (todo) => todo.status === "approved"
+        );
+        setTodos(filteredTodos);
       } else {
         setError("Error: Data received is not an array");
       }
     } catch (error) {
-      setError(`Error fetching : ${error.message}`);
+      setError(`Error fetching: ${error.message}`);
     }
   };
 
@@ -46,7 +48,7 @@ const TodoList = () => {
   const handleUpdate = async (todoId, updatedText) => {
     try {
       await axios.put(
-        `https://blogs-server-seven.vercel.app/api/todos/${todoId}`,
+        `https://userinformation.vercel.app/api/todos/${todoId}`,
         { text: updatedText }
       );
       // Fetch todos again to get the latest updates

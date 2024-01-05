@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress"; // Import CircularProgress
 
 import { AuthContext } from "../../provider/AuthProvider";
 import Button from "@mui/material/Button";
@@ -16,21 +17,21 @@ const img_hosting_token = import.meta.env.VITE_Image_Upload_tokens;
 
 const Task = () => {
   const [text, setText] = useState("");
-  const [files, setFiles] = useState([]); // State to store the selected files
-  const [successMessage, setSuccessMessage] = useState(""); // State to manage success message
-
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(false); // Add loading state
+  const [successMessage, setSuccessMessage] = useState("");
   const { user } = useContext(AuthContext);
 
   const handleAddTodo = async () => {
     if (!text.trim() && files.length === 0) {
-      // Check if the input is empty and no files are selected
-      return; // Don't proceed if the input is invalid
+      return;
     }
 
     try {
+      setLoading(true); // Set loading to true when starting the API request
+
       const imgURLs = [];
 
-      // Check if files are selected for image upload
       if (files.length > 0) {
         const uploadPromises = files.map(async (file) => {
           const formData = new FormData();
@@ -47,57 +48,45 @@ const Task = () => {
           if (imgResponse.success) {
             imgURLs.push(imgResponse.data.display_url);
           } else {
-            // Handle the case where the image upload was not successful
             console.error("Image upload failed:", imgResponse.error.message);
           }
         });
 
-        // Wait for all image uploads to complete
         await Promise.all(uploadPromises);
       }
 
       const newTodo = {
         text,
         photoURL: user.photoURL,
-        images: imgURLs, 
+        images: imgURLs,
         userName: user.displayName,
         email: user.email,
         timestamp: new Date().toISOString(),
         userId: user.uid,
-        // Add any other properties you need for your todo
+        status: "pending",
       };
 
-      // Now make the API request to add the todo to the server
       const apiResponse = await axios.post(
-        "https://blogs-server-seven.vercel.app/api/todos",
+        "https://userinformation.vercel.app/api/todos",
         newTodo
       );
 
-      // Handle a successful API response if needed
       console.log("Post successfully:", apiResponse.data);
 
-      // Update the success message
       setSuccessMessage("Post successfully!");
 
-      // Clear the success message after a few seconds (e.g., 3 seconds)
       setTimeout(() => {
         setSuccessMessage("");
       }, 1000);
 
       setText("");
-      setFiles([]); // Reset the selected files after adding the todo
+      setFiles([]);
     } catch (error) {
-      // Handle any unexpected errors
       console.error("Error adding Todo:", error);
+    } finally {
+      setLoading(false); // Set loading to false after the API request completes
     }
-    
   };
-
-  // const handleKeyPress = (e) => {
-  //   if (e.key === "Enter") {
-  //     handleAddTodo();
-  //   }
-  // };
 
   const handleFileChange = (e) => {
     const selectedFiles = e.target.files;
@@ -108,14 +97,12 @@ const Task = () => {
   return (
     <Paper elevation={3} className={`facebook-style-post ${successMessage ? "success" : ""}`}>
       {user && (
-      <Box p={2}>
-      
-        <Grid container spacing={2} alignItems="center">
-          <Grid item>
-            <Avatar src={user?.photoURL} alt="User Avatar" />
-          </Grid>
-          <Grid item xs>
-         
+        <Box p={2}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item>
+              <Avatar src={user?.photoURL} alt="User Avatar" />
+            </Grid>
+            <Grid item xs>
               <TextField
                 fullWidth
                 multiline
@@ -124,62 +111,66 @@ const Task = () => {
                 variant="outlined"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-             
               />
-      
+            </Grid>
           </Grid>
-        </Grid>
-   
-        {files.length > 0 && (
-          <Box mt={2} display="flex" alignItems="center">
-            {files.map((file, index) => (
-              <img
-                key={index}
-                className="border m-1"
-                src={URL.createObjectURL(file)}
-                alt={`Selected ${index + 1}`}
-                width="50px"
-              />
-            ))}
-          </Box>
-        )}
 
-        {successMessage && (
-          <Typography variant="body1" color="success" mt={2}>
-            {successMessage}
-          </Typography>
-        )}
-
-        <Box mt={2} display="flex" alignItems="center" justifyContent="space-between">
-          {user && (
-            <>
-              <input type="file" accept="image/*" style={{ display: "none" }} id="file-input" onChange={handleFileChange} />
-
-              <label htmlFor="file-input">
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  component="span"
-                  startIcon={<CloudUploadIcon />}
-                >
-                  Photo/Video
-                </Button>
-              </label>
-            </>
+          {files.length > 0 && (
+            <Box mt={2} display="flex" alignItems="center">
+              {files.map((file, index) => (
+                <img
+                  key={index}
+                  className="border m-1"
+                  src={URL.createObjectURL(file)}
+                  alt={`Selected ${index + 1}`}
+                  width="50px"
+                />
+              ))}
+            </Box>
           )}
 
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddTodo}
-            disabled={!text.trim() && !files.length}
-            startIcon={<AddIcon />}
-          >
-            Post
-          </Button>
+          {successMessage && (
+            <Typography variant="body1" color="success" mt={2}>
+              {successMessage}
+            </Typography>
+          )}
+
+          <Box mt={2} display="flex" alignItems="center" justifyContent="space-between">
+            {user && (
+              <>
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  id="file-input"
+                  onChange={handleFileChange}
+                />
+
+                <label htmlFor="file-input">
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    component="span"
+                    startIcon={<CloudUploadIcon />}
+                  >
+                    Photo/Video
+                  </Button>
+                </label>
+              </>
+            )}
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddTodo}
+              disabled={!text.trim() && !files.length}
+              startIcon={<AddIcon />}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Post"}
+            </Button>
+          </Box>
         </Box>
-      </Box>
-         )}
+      )}
     </Paper>
   );
 };

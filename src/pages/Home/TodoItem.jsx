@@ -92,7 +92,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const handleUpdateTodo = async () => {
     try {
       await axios.put(
-        `https://blogs-server-seven.vercel.app/api/todos/${todo._id}`,
+        `https://userinformation.vercel.app/api/todos/${todo._id}`,
         {
           text,
           completed: todo.completed,
@@ -125,7 +125,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const handleDeleteTodo = async () => {
     try {
       await axios.delete(
-        `https://blogs-server-seven.vercel.app/api/todos/${todo._id}`
+        `https://userinformation.vercel.app/api/todos/${todo._id}`
       );
 
       onDelete(todo._id);
@@ -151,18 +151,15 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     }
 
     try {
-      await axios.post(
-        `https://blogs-server-seven.vercel.app/api/todosReports`,
-        {
-          text,
-          photoURL: user.photoURL,
-          userName: user.displayName,
-          email: user.email,
-          timestamp: new Date().toISOString(),
-          todoId: todo._id,
-          reporterId: user.uid,
-        }
-      );
+      await axios.post(`https://userinformation.vercel.app/api/todosReports`, {
+        text,
+        photoURL: user.photoURL,
+        userName: user.displayName,
+        email: user.email,
+        timestamp: new Date().toISOString(),
+        todoId: todo._id,
+        reporterId: user.uid,
+      });
 
       setReporting(true);
 
@@ -197,57 +194,51 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const handleLikeTodo = async () => {
     try {
       if (!user) {
-        // Handle the case where the user is not authenticated.
-        // You can show a login prompt or redirect the user to the login page.
-        // Example: Redirect to the login page
-        navigate("/login"); // Make sure 'navigate' is available in your component
+        navigate("/login"); // Redirect to the login page or show a login prompt
         throw new Error("User not authenticated");
       }
-
+  
       // Check if the user has already liked the post
       if (todo.likes && todo.likes.includes(user.uid)) {
-        // User has already liked the post, so do nothing
-        toast.info("You've already liked this post!", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.info("You've already liked this post!", { /* ... */ });
       } else {
-        // User hasn't liked the post, so like it
-        // Update the UI to show the updated like count
+        // Optimistically update the UI to show the updated like count
         setLikeCount(likeCount + 1);
-
+  
         // Optimistically update the likes array to prevent multiple likes by the same user
         todo.likes = todo.likes ? [...todo.likes, user.uid] : [user.uid];
-
+  
         // Make the API call to add the like
         await axios.post(
-          `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/likes`,
+          `https://userinformation.vercel.app/api/todos/${todo._id}/likes`,
           {
             userId: user.uid,
             userName: user?.displayName,
           }
         );
-
-        toast.success("Liked the post!", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+  
+        toast.success("Liked the post!", { /* ... */ });
       }
     } catch (error) {
       console.error("Error liking post:", error);
-
+  
       // If there's an error, rollback the optimistic UI update
       setLikeCount(likeCount);
+  
+      // Optionally, you can rollback the likes array as well
       todo.likes = todo.likes ? todo.likes : [];
-
+  
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        console.error("Server responded with:", error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("No response received from the server");
+      } else {
+        // Something happened in setting up the request that triggered an error
+        console.error("Error setting up the request:", error.message);
+      }
+  
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -255,6 +246,8 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       });
     }
   };
+  
+  
 
   // eslint-disable-next-line no-unused-vars
   const handleAddComment = async () => {
@@ -263,7 +256,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         // Send a POST request to your API to add the comment.
         // eslint-disable-next-line no-unused-vars
         const response = await axios.post(
-          `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/comments`,
+          `https://userinformation.vercel.app/api/todos/${todo._id}/comments`,
           {
             userId: user.uid,
             text: newComment,
@@ -312,7 +305,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         // Send a POST request to your API to add the reply.
         // eslint-disable-next-line no-unused-vars
         const response = await axios.post(
-          `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/comments/${replyingTo}/replies`,
+          `https://userinformation.vercel.app/api/todos/${todo._id}/comments/${replyingTo}/replies`,
           {
             userId: user.uid,
             text: replyText,
@@ -350,7 +343,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
     const fetchLikes = async () => {
       try {
         const response = await axios.get(
-          `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/likes`
+          `https://userinformation.vercel.app/api/todos/${todo._id}/likes`
         );
         setLikeCount(response.data.likeCount);
       } catch (error) {
@@ -365,7 +358,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
   const fetchComments = async () => {
     try {
       const response = await axios.get(
-        `https://blogs-server-seven.vercel.app/api/todos/${todo._id}/comments`
+        `https://userinformation.vercel.app/api/todos/${todo._id}/comments`
       );
       setComments(response.data);
     } catch (error) {
@@ -409,7 +402,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       try {
         // Send a DELETE request to your API to delete the comment.
         await axios.delete(
-          `https://blogs-server-seven.vercel.app/api/comments/${commentId}`
+          `https://userinformation.vercel.app/api/comments/${commentId}`
         );
 
         // Fetch comments after deleting a comment

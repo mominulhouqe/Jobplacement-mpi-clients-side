@@ -36,7 +36,7 @@ const JobPlacement = () => {
       };
 
       const apiResponse = await axios.post(
-        "https://blogs-server-seven.vercel.app/api/forms",
+        "https://userinformation.vercel.app/api/forms",
         newFormData
       );
 
