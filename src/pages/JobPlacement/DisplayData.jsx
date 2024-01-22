@@ -52,7 +52,7 @@ const DisplayData = () => {
       const response = await axios.get(
         "https://userinformation.vercel.app/api/forms"
       );
-      console.log(response.data);
+      
       setFormData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);

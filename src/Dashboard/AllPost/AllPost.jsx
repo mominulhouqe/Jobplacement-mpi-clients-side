@@ -25,7 +25,7 @@ const AllPost = () => {
       );
       if (Array.isArray(response.data)) {
         setPosts(response.data);
-        console.log(response.data);
+        
         setLoading(false);
       } else {
         setError("Posts not received");
