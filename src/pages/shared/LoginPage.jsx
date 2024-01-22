@@ -69,36 +69,54 @@ const LoginPage = () => {
 
       // Additional logic after successful Google sign-in
       const currentUser = auth.currentUser;
-      const saveUser = {
-        name: currentUser.displayName,
+      const userToCheck = {
         email: currentUser.email,
-        photoURL: currentUser.photoURL,
       };
 
-      // Make an API call to your server
-      const apiResponse = await fetch(
-        "https://userinformation.vercel.app/users",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(saveUser),
-        }
+      // Check if the user already exists
+      const checkUserResponse = await fetch(
+        `https://userinformation.vercel.app/users/${currentUser.email}`
       );
 
-      // Check the response status and handle accordingly
-      if (apiResponse.ok) {
-        Swal.fire("You Login Successfully!", "success");
+      if (checkUserResponse.ok) {
+        // User already exists, navigate home
         navigate(from, { replace: true });
-      } 
+      } else {
+        // User does not exist, proceed with creating a new user
+        const saveUser = {
+          name: currentUser.displayName,
+          email: currentUser.email,
+          photoURL: currentUser.photoURL,
+        };
+
+        // Make an API call to create a new user
+        const createNewUserResponse = await fetch(
+          "https://userinformation.vercel.app/users",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(saveUser),
+          }
+        );
+
+        // Check the response status and handle accordingly
+        if (createNewUserResponse.ok) {
+          Swal.fire("You logged in successfully!", "success");
+          navigate(from, { replace: true });
+        } else {
+          const errorMessage = await createNewUserResponse.json();
+          console.error("API Error:", errorMessage);
+          Swal.fire("Error!", errorMessage, "error");
+        }
+      }
     } catch (error) {
       let errorMessage = "Login failed. Please try again.";
       if (error.message) {
         errorMessage = error.message;
       }
       Swal.fire("Error!", errorMessage, "error");
-      return;
     }
   };
 

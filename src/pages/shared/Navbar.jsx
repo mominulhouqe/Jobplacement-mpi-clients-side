@@ -93,7 +93,7 @@ const Navbar = () => {
         </IconButton>
         <ul
           className={`md:flex md:items-center md:pb-0 pb-12 absolute md:static  md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in ${
-            open ? "top-11 " : "top-[-490px]"
+            open ? "top-11 bg-primary" : "top-[-490px] "
           }`}
         >
           <li className="md:ml-4 my-2">
@@ -128,7 +128,7 @@ const Navbar = () => {
               <Link
                 to="/dashboard/userhome"
                 role="menuitem"
-                className="flex items-center gap-2 py-4  uppercase transition-colors duration-300 hover:text-[#fe0800] focus:text-[#fe0800] focus:outline-none  lg:px-8"
+                className="flex items-center gap-2 py-4  uppercase lg:px-8"
                 href="#"
                 onClick={handleItemClick}
               >

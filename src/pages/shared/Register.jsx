@@ -4,8 +4,6 @@ import {
   Button,
   CssBaseline,
   TextField,
-  FormControlLabel,
-  Checkbox,
   Link,
   Grid,
   Box,
@@ -24,15 +22,16 @@ import {
   updateProfile,
   getAuth,
 } from "firebase/auth";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import app from "../../firebase.config";
-import image from "../../assets/asd.jpg";
 
 const Register = () => {
   const auth = getAuth(app);
-  const { user, signInGoogle } = useContext(AuthContext);
+  const { signInGoogle } = useContext(AuthContext);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const from = location.state?.from?.pathname || "/";
+
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
@@ -126,38 +125,56 @@ const Register = () => {
     try {
       await signInGoogle();
 
-      // Additional logic after successful Google sign-up
+      // Additional logic after successful Google sign-in
       const currentUser = auth.currentUser;
-      const saveUser = {
-        name: currentUser.displayName,
+      const userToCheck = {
         email: currentUser.email,
-        photoURL: currentUser.photoURL,
       };
 
-      const apiResponse = await fetch(
-        "https://userinformation.vercel.app/users",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(saveUser),
-        }
+      // Check if the user already exists
+      const checkUserResponse = await fetch(
+        `https://userinformation.vercel.app/users/${currentUser.email}`
       );
 
-      // Check the response status and handle accordingly
-      if (apiResponse.ok) {
-        Swal.fire("You Login Successfully!", "success");
-        // Additional logic or redirection if needed
-        navigate("/login");
+      if (checkUserResponse.ok) {
+        // User already exists, navigate home
+        navigate(from, { replace: true });
+      } else {
+        // User does not exist, proceed with creating a new user
+        const saveUser = {
+          name: currentUser.displayName,
+          email: currentUser.email,
+          photoURL: currentUser.photoURL,
+        };
+
+        // Make an API call to create a new user
+        const createNewUserResponse = await fetch(
+          "https://userinformation.vercel.app/users",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(saveUser),
+          }
+        );
+
+        // Check the response status and handle accordingly
+        if (createNewUserResponse.ok) {
+          Swal.fire("You logged in successfully!", "success");
+          navigate(from, { replace: true });
+        } else {
+          const errorMessage = await createNewUserResponse.json();
+          console.error("API Error:", errorMessage);
+          Swal.fire("Error!", errorMessage, "error");
+        }
       }
     } catch (error) {
-      let errorMessage = "Registration failed. Please try again.";
+      let errorMessage = "Login failed. Please try again.";
       if (error.message) {
         errorMessage = error.message;
       }
       Swal.fire("Error!", errorMessage, "error");
-      return;
     }
   };
 

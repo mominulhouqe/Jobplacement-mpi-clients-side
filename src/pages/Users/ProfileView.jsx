@@ -46,10 +46,10 @@ const ProfileView = () => {
               />
               <img
                 className="rounded-full w-20 h-20 object-fill mx-auto -translate-y-1/2 border"
-                src={user.photoURL || "default-photo-url.jpg"}
+                src={user?.photoURL || "default-photo-url.jpg"}
                 alt=""
               />
-              <h4 className="mb-2 font-medium text-lg">{user.displayName}</h4>
+              <h4 className="mb-2 font-medium text-lg">{user?.displayName}</h4>
               <div className="text-sm text-gray-600"></div>
             </div>
             <div className="border-b border-gray-400 my-4"></div>
@@ -57,14 +57,14 @@ const ProfileView = () => {
             <div className="p-2 overflow-y-auto whitespace-nowrap">
               <p>
                 <span className="font-medium">Role:</span>{" "}
-                {user.role || "No role available"}
+                {user?.role || "No role available"}
               </p>
               <p className="p-2 border-b">
-                <span className="font-medium">Email:</span> {user.email}
+                <span className="font-medium">Email:</span> {user?.email}
               </p>
               <p className="p-2 border-b">
                 <span className="font-medium">AdditionalData:</span>{" "}
-                {userData.additionalData || "No additional data available"}
+                {userData?.additionalData || "No additional data available"}
               </p>
             </div>
           </div>
