@@ -197,17 +197,19 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         navigate("/login"); // Redirect to the login page or show a login prompt
         throw new Error("User not authenticated");
       }
-  
+
       // Check if the user has already liked the post
       if (todo.likes && todo.likes.includes(user.uid)) {
-        toast.info("You've already liked this post!", { /* ... */ });
+        toast.info("You've already liked this post!", {
+          /* ... */
+        });
       } else {
         // Optimistically update the UI to show the updated like count
         setLikeCount(likeCount + 1);
-  
+
         // Optimistically update the likes array to prevent multiple likes by the same user
         todo.likes = todo.likes ? [...todo.likes, user.uid] : [user.uid];
-  
+
         // Make the API call to add the like
         await axios.post(
           `https://userinformation.vercel.app/api/todos/${todo._id}/likes`,
@@ -216,18 +218,20 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             userName: user?.displayName,
           }
         );
-  
-        toast.success("Liked the post!", { /* ... */ });
+
+        toast.success("Liked the post!", {
+          /* ... */
+        });
       }
     } catch (error) {
       console.error("Error liking post:", error);
-  
+
       // If there's an error, rollback the optimistic UI update
       setLikeCount(likeCount);
-  
+
       // Optionally, you can rollback the likes array as well
       todo.likes = todo.likes ? todo.likes : [];
-  
+
       if (error.response) {
         // The request was made and the server responded with a status code
         console.error("Server responded with:", error.response.data);
@@ -238,7 +242,7 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
         // Something happened in setting up the request that triggered an error
         console.error("Error setting up the request:", error.message);
       }
-  
+
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -246,8 +250,6 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
       });
     }
   };
-  
-  
 
   // eslint-disable-next-line no-unused-vars
   const handleAddComment = async () => {
@@ -560,38 +562,16 @@ const TodoItem = ({ todo, onDelete, onUpdate }) => {
             </Typography>
 
             {todo.images && (
-              <div className="container image-grid my-2">
-                {/* Mapping through images to display them */}
-                {showAllImages
-                  ? todo.images.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`Image ${index}`}
-                        className="rounded-lg cursor-pointer image  bg-slate-950"
-                        onClick={() => openFullscreenImage(image)}
-                      />
-                    ))
-                  : todo.images
-                      .slice(0, 2)
-                      .map((image, index) => (
-                        <img
-                          key={index}
-                          src={image}
-                          alt={`Image ${index}`}
-                          className="rounded-lg bg-slate-950 cursor-pointer"
-                          onClick={() => openFullscreenImage(image)}
-                        />
-                      ))}
-                {/* Show a button to view more images if there are more than 3 */}
-                {todo.images.length > 3 && !showAllImages && (
-                  <button
-                    className="text-blue-500 mt-2"
-                    onClick={() => setShowAllImages(true)}
-                  >
-                    +{todo.images.length - 3} more
-                  </button>
-                )}
+              <div className="container my-2">
+                {/* Mapping through images to display the first two images */}
+                {todo.images.slice(0, 2).map((image, index) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt={`Image ${index}`}
+                    className="rounded-lg bg-slate-950 cursor-pointer w-full h-96 object-fill"
+                  />
+                ))}
               </div>
             )}
 
