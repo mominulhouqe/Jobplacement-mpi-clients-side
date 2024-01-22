@@ -1,26 +1,22 @@
-
 import TodoList from "./TodoList";
-import {
-  Drawer,
-  List,
-  ListItem,
-  IconButton,
-} from "@mui/material";
+import { Drawer, List, ListItem, IconButton } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { useState } from "react";
-import DisplayData from "../JobPlacement/DisplayData";
+import ProfileView from "../Users/ProfileView";
+
+// import DisplayData from "../JobPlacement/DisplayData";
 
 const Home = () => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  // const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
+  // const toggleDrawer = () => {
+  //   setIsDrawerOpen(!isDrawerOpen);
+  // };
 
   return (
-    <div className="mt-16 flex flex-col md:flex-row container mx-auto">
-      <div className="md:hidden">
-        {/* Small Device */}
+    <div className="mt-20 container mx-auto flex gap-6">
+      {/* Small Device */}
+      {/* <div className="md:hidden">
         <IconButton
           aria-label="Open Menu"
           onClick={toggleDrawer}
@@ -33,23 +29,31 @@ const Home = () => {
           <div >
             <List > 
               <ListItem button>
-                {/* <ListItemText primary="Coming Soon" /> */}
+                
                 <div className="">
-                <DisplayData />
+              
                 </div>
               </ListItem>
             </List>
           </div>
         </Drawer>
+      </div> */}
+      <div className="hidden md:block w-full md:w-1/5 mt-4">
+        <ProfileView />
       </div>
 
-      <div className="container w-full md:w-3/5 mx-auto mt-8 md:mr-4">
+      <div className="md:w-3/5 w-full">
         <TodoList />
       </div>
 
-      <div className="hidden md:block w-full md:w-1/3 mt-4 md:mt-0">
-      {/* <DisplayData /> */}
+      <div className="hidden md:block w-full md:w-1/5 mt-4">
+        <div>
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Atque, eos ad amet eum accusantium tempore accusamus aliquam maiores voluptates laborum ipsa numquam modi eligendi debitis asperiores similique provident, tenetur veniam?
+        </div>
       </div>
+    
+
+
     </div>
   );
 };
