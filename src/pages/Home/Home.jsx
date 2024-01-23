@@ -3,6 +3,7 @@ import { Drawer, List, ListItem, IconButton } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { useState } from "react";
 import ProfileView from "../Users/ProfileView";
+import CompanyList from "../Company/CompanyList";
 
 // import DisplayData from "../JobPlacement/DisplayData";
 
@@ -38,18 +39,16 @@ const Home = () => {
           </div>
         </Drawer>
       </div> */}
-      <div className="hidden md:block w-full md:w-1/5 mt-4">
+      <div className="hidden lg:block w-full md:w-2/6 mt-4">
         <ProfileView />
       </div>
 
-      <div className="md:w-3/5 w-full">
+      <div className="lg:w-3/6 w-full">
         <TodoList />
       </div>
 
-      <div className="hidden md:block w-full md:w-1/5 mt-4">
-        <div>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Atque, eos ad amet eum accusantium tempore accusamus aliquam maiores voluptates laborum ipsa numquam modi eligendi debitis asperiores similique provident, tenetur veniam?
-        </div>
+      <div className="hidden lg:block w-full md:w-2/6 mt-4">
+     <CompanyList />
       </div>
     
 

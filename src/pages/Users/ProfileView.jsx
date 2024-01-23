@@ -37,7 +37,7 @@ const ProfileView = () => {
     <div>
       <div className="">
         {userData && (
-          <div className="border rounded-lg w-full h-screen bg-slate-50">
+          <div className="border rounded-lg w-full h-screen bg-slate-50 text-xs">
             <div className="text-center mb-4">
               <img
                 src={img2}
@@ -54,17 +54,13 @@ const ProfileView = () => {
             </div>
             <div className="border-b border-gray-400 my-4"></div>
 
-            <div className="p-2 overflow-y-auto whitespace-nowrap">
-              <p>
-                <span className="font-medium">Role:</span>{" "}
+            <div className="p-2  whitespace-nowrap">
+              <p className="p-2 border-b">
+                <span className="font-medium ">Role:</span>{" "}
                 {user?.role || "No role available"}
               </p>
               <p className="p-2 border-b">
                 <span className="font-medium">Email:</span> {user?.email}
-              </p>
-              <p className="p-2 border-b">
-                <span className="font-medium">AdditionalData:</span>{" "}
-                {userData?.additionalData || "No additional data available"}
               </p>
             </div>
           </div>
